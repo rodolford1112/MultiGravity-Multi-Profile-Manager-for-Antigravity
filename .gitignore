@@ -1,0 +1,14 @@
+# Ignore profiles data and user sessions/tokens
+profiles/*
+!profiles/.gitkeep
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Build artifacts and binaries (distributed via GitHub Releases)
+build/
+dist/
+*.spec
+*.exe
+*.zip
