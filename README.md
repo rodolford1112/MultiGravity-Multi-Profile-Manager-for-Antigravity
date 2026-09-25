@@ -1,4 +1,4 @@
-# MultiGravity
+# MultiGravity - Multi-Profile Manager for Antigravity
 
 A lightweight, sandboxed profile manager and multi-instance launcher for Google Antigravity IDE on Windows.
 
