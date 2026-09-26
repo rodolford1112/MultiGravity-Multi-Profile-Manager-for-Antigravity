@@ -8,10 +8,13 @@ MultiGravity allows you to run multiple instances of Antigravity simultaneously,
 
 ## Downloads
 
-Pre-built binaries and clean source archives are available directly under the [Releases](https://github.com/rodolford1112/MultiGravity-Multi-Profile-Manager-for-Antigravity/releases) page:
+Pre-built binaries and clean source archives for v1.0.1 are available directly under the [Releases](https://github.com/rodolford1112/MultiGravity-Multi-Profile-Manager-for-Antigravity/releases/tag/v1.0.1) page:
 
 - `MultiGravity.exe`: Standalone Windows executable (portable, no Python installation required).
 - `MultiGravity-Source.zip`: Source package containing editable code and assets.
+
+### Changes in v1.0.1
+- Fixed project chat history visibility: Automatically links `.gemini/antigravity` via native NTFS directory junction, allowing shared projects to seamlessly display all previous chats, conversation summaries, and artifacts in the Antigravity sidebar while keeping Google authentication tokens completely segregated.
 
 ---
 
