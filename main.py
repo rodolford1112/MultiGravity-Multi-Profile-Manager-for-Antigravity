@@ -240,6 +240,42 @@ def carregar_lista():
                 sufixo = t("projetos_sufixo")
                 lista.insert(tk.END, f"{pasta}  ({qtd} {sufixo})")
 
+def garantir_link_antigravity(pasta_perfil):
+    master_ag = os.path.join(os.path.expanduser("~"), ".gemini", "antigravity")
+    if not os.path.exists(master_ag):
+        return
+    ag_dir = os.path.join(pasta_perfil, "home", ".gemini", "antigravity")
+    gemini_dir = os.path.join(pasta_perfil, "home", ".gemini")
+    os.makedirs(gemini_dir, exist_ok=True)
+    if os.path.islink(ag_dir):
+        return
+    if os.path.exists(ag_dir):
+        summaries = os.path.join(ag_dir, "conversation_summaries.db")
+        if os.path.exists(summaries) and os.path.getsize(summaries) > 30000:
+            return
+        try:
+            shutil.rmtree(ag_dir, ignore_errors=True)
+        except:
+            pass
+    try:
+        subprocess.run(["cmd", "/c", "mklink", "/J", ag_dir, master_ag], capture_output=True)
+    except:
+        pass
+    if not os.path.exists(ag_dir):
+        try:
+            os.makedirs(ag_dir, exist_ok=True)
+            for f in ["conversation_summaries.db", "antigravity_state.pbtxt"]:
+                src = os.path.join(master_ag, f)
+                if os.path.exists(src):
+                    shutil.copy2(src, os.path.join(ag_dir, f))
+            for d in ["conversations", "brain"]:
+                src = os.path.join(master_ag, d)
+                dst = os.path.join(ag_dir, d)
+                if os.path.exists(src) and not os.path.exists(dst):
+                    shutil.copytree(src, dst)
+        except:
+            pass
+
 def criar_perfil():
     nome = entrada_nome.get().strip()
     if not nome:
@@ -252,6 +288,7 @@ def criar_perfil():
     pasta_proj = os.path.join(pasta_perfil, "home", ".gemini", "config", "projects")
     os.makedirs(os.path.join(pasta_perfil, "data"), exist_ok=True)
     os.makedirs(pasta_proj, exist_ok=True)
+    garantir_link_antigravity(pasta_perfil)
     
     with open(os.path.join(pasta_proj, "outside-of-project.json"), "w", encoding="utf-8") as fp:
         json.dump({"id": "outside-of-project", "name": "Outside of Project"}, fp)
@@ -281,6 +318,7 @@ def abrir_perfil():
     pasta_proj = os.path.join(home_dir, ".gemini", "config", "projects")
     os.makedirs(data_dir, exist_ok=True)
     os.makedirs(pasta_proj, exist_ok=True)
+    garantir_link_antigravity(pasta_perfil)
     
     outside_file = os.path.join(pasta_proj, "outside-of-project.json")
     if not os.path.exists(outside_file):
@@ -304,6 +342,7 @@ def criar_atalho():
     pasta_perfil = os.path.join(PROFILES_DIR, nome)
     data_dir = os.path.join(pasta_perfil, "data")
     home_dir = os.path.join(pasta_perfil, "home")
+    garantir_link_antigravity(pasta_perfil)
     runner_script = os.path.join(pasta_perfil, "launch.vbs")
     vbs = f'''Set WshShell = CreateObject("WScript.Shell")
 Set objEnv = WshShell.Environment("PROCESS")
