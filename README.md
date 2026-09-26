@@ -8,7 +8,7 @@ MultiGravity allows you to run multiple instances of Antigravity simultaneously,
 
 ## Downloads
 
-Pre-built binaries and clean source archives are available directly under the [Releases](https://github.com/rodolford1112/MultiGravity/releases) page:
+Pre-built binaries and clean source archives are available directly under the [Releases](https://github.com/rodolford1112/MultiGravity-Multi-Profile-Manager-for-Antigravity/releases) page:
 
 - `MultiGravity.exe`: Standalone Windows executable (portable, no Python installation required).
 - `MultiGravity-Source.zip`: Source package containing editable code and assets.
