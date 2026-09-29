@@ -1,10 +1,6 @@
 # MultiGravity - Multi-Profile Manager for Antigravity
 
 <p align="center">
-  <img src="assets/banner_preview.png" alt="MultiGravity Banner" width="650">
-</p>
-
-<p align="center">
   <img src="https://img.shields.io/badge/Platform-Windows-blue" alt="Platform">
   <img src="https://img.shields.io/badge/Python-3.8%2B-green" alt="Python">
   <img src="https://img.shields.io/badge/License-MIT-yellow" alt="License">
@@ -127,7 +123,6 @@ MultiGravity/
 |-- config.example.json            # Configuration template
 |-- icon.ico                       # Application icon
 |-- README.md                      # Documentation
-|-- assets/                        # Branding and visual assets
 |-- docs/
 |   `-- COMPLIANCE_AND_LEGAL.md    # Legal & technical compliance whitepaper
 |-- profiles/                      # Sandboxed profiles directory
