@@ -12,3 +12,7 @@ dist/
 *.spec
 *.exe
 *.zip
+
+# Local configuration
+config.json
+!config.example.json
