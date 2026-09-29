@@ -1,5 +1,16 @@
 # MultiGravity - Multi-Profile Manager for Antigravity
 
+<p align="center">
+  <img src="assets/banner_preview.png" alt="MultiGravity Banner" width="650">
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Platform-Windows-blue" alt="Platform">
+  <img src="https://img.shields.io/badge/Python-3.8%2B-green" alt="Python">
+  <img src="https://img.shields.io/badge/License-MIT-yellow" alt="License">
+  <img src="https://img.shields.io/badge/Release-v1.0.1-orange" alt="Release">
+</p>
+
 A lightweight, sandboxed profile manager and multi-instance launcher for Google Antigravity IDE on Windows.
 
 MultiGravity allows you to run multiple instances of Antigravity simultaneously, each logged into a completely independent Google account, without session conflicts, credential overwrites, or forced logouts.
@@ -113,8 +124,12 @@ python main.py
 MultiGravity/
 |-- MultiGravity.exe               # Standalone executable
 |-- main.py                        # Source code
+|-- config.example.json            # Configuration template
 |-- icon.ico                       # Application icon
 |-- README.md                      # Documentation
+|-- assets/                        # Branding and visual assets
+|-- docs/
+|   `-- COMPLIANCE_AND_LEGAL.md    # Legal & technical compliance whitepaper
 |-- profiles/                      # Sandboxed profiles directory
     |-- Profile_A/
     |   |-- home/                  # Virtual %USERPROFILE% (.gemini, auth tokens)
@@ -123,6 +138,12 @@ MultiGravity/
         |-- home/
         `-- userData/
 ```
+
+---
+
+## Legal & Technical Compliance
+
+A comprehensive technical and legal compliance framework covering local sandbox isolation, RFC standards (RFC 1918, RFC 3022), and Google Terms of Service adherence is documented in [docs/COMPLIANCE_AND_LEGAL.md](docs/COMPLIANCE_AND_LEGAL.md).
 
 ---
 
