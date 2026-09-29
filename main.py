@@ -1,5 +1,6 @@
 import os
 import sys
+import re
 import json
 import shutil
 import subprocess
@@ -46,6 +47,7 @@ TEXTOS = {
         "projetos_sufixo": "projetos",
         "aviso_selecao": "Selecione um perfil na lista!",
         "aviso_nome": "Digite um nome para o perfil!",
+        "aviso_nome_invalido": "Nome invalido! Nao use caracteres especiais (< > : \" / \\ | ? *) nem termine com espaco ou ponto.",
         "erro_existe": "Ja existe um perfil com esse nome!",
         "sucesso_criado": "Perfil '{nome}' criado com sucesso!",
         "sucesso_atalho": "Atalho criado na Area de Trabalho:\nAntigravity - {nome}.lnk",
@@ -80,6 +82,7 @@ TEXTOS = {
         "projetos_sufixo": "projects",
         "aviso_selecao": "Select a profile from the list!",
         "aviso_nome": "Enter a name for the profile!",
+        "aviso_nome_invalido": "Invalid profile name! Do not use special characters (< > : \" / \\ | ? *) or trailing spaces/dots.",
         "erro_existe": "A profile with this name already exists!",
         "sucesso_criado": "Profile '{nome}' created successfully!",
         "sucesso_atalho": "Shortcut created on Desktop:\nAntigravity - {nome}.lnk",
@@ -114,6 +117,7 @@ TEXTOS = {
         "projetos_sufixo": "proyectos",
         "aviso_selecao": "¡Selecciona un perfil de la lista!",
         "aviso_nome": "¡Introduce un nombre para el perfil!",
+        "aviso_nome_invalido": "¡Nombre de perfil no valido! No use caracteres especiales (< > : \" / \\ | ? *) ni espacios o puntos finales.",
         "erro_existe": "¡Ya existe un perfil con ese nombre!",
         "sucesso_criado": "¡Perfil '{nome}' creado con exito!",
         "sucesso_atalho": "Acceso directo creado en el Escritorio:\nAntigravity - {nome}.lnk",
@@ -148,6 +152,7 @@ TEXTOS = {
         "projetos_sufixo": "проектов",
         "aviso_selecao": "Выберите профиль из списка!",
         "aviso_nome": "Введите имя для профиля!",
+        "aviso_nome_invalido": "Недопустимое имя профиля! Не используйте специальные символы (< > : \" / \\ | ? *) или пробелы/точки в конце.",
         "erro_existe": "Профиль с таким именем уже существует!",
         "sucesso_criado": "Профиль '{nome}' успешно создан!",
         "sucesso_atalho": "Ярлык создан на рабочем столе:\nAntigravity - {nome}.lnk",
@@ -180,6 +185,14 @@ def carregar_idioma_salvo():
     if os.path.exists(CONFIG_FILE):
         try:
             with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                d = json.load(f)
+                return d.get("lang", "pt")
+        except:
+            pass
+    example_config = os.path.join(BASE_DIR, "config.example.json")
+    if os.path.exists(example_config):
+        try:
+            with open(example_config, "r", encoding="utf-8") as f:
                 d = json.load(f)
                 return d.get("lang", "pt")
         except:
@@ -276,10 +289,23 @@ def garantir_link_antigravity(pasta_perfil):
         except:
             pass
 
+def validar_nome_perfil(nome):
+    if not nome:
+        return False
+    # Caracteres invalidos para pastas no Windows: \ / : * ? " < > |
+    if re.search(r'[<>:"/\\|?*]', nome):
+        return False
+    if nome.endswith(".") or nome.endswith(" "):
+        return False
+    return True
+
 def criar_perfil():
     nome = entrada_nome.get().strip()
     if not nome:
         messagebox.showwarning(t("t_aviso"), t("aviso_nome"))
+        return
+    if not validar_nome_perfil(nome):
+        messagebox.showwarning(t("t_aviso"), t("aviso_nome_invalido"))
         return
     pasta_perfil = os.path.join(PROFILES_DIR, nome)
     if os.path.exists(pasta_perfil):
