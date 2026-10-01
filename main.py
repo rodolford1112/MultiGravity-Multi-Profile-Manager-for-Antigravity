@@ -3,9 +3,14 @@ import sys
 import re
 import json
 import shutil
+import sqlite3
 import subprocess
+import urllib.parse
+import uuid
+import time
+from datetime import datetime
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import ttk, messagebox
 
 if getattr(sys, "frozen", False):
     BASE_DIR = os.path.dirname(sys.executable)
@@ -15,6 +20,18 @@ else:
 PROFILES_DIR = os.path.join(BASE_DIR, "profiles")
 CONFIG_FILE = os.path.join(BASE_DIR, "config.json")
 MASTER_DIR = os.path.join(os.path.expanduser("~"), ".gemini", "config", "projects")
+MASTER_AG = os.path.join(os.path.expanduser("~"), ".gemini", "antigravity")
+DB_PATH = os.path.join(MASTER_AG, "conversation_summaries.db")
+
+CLAUDE_PKG = "Claude_pzs8sxrjxfjjc"
+CHATGPT_PKG = "OpenAI.Codex_2p2nqsd0c76g0"
+CLAUDE_JSON_PATH = os.path.expanduser("~/.claude.json")
+CLAUDE_PROJECTS_DIR = os.path.expanduser("~/.claude/projects")
+
+CODEX_DIR = os.path.expanduser("~/.codex")
+CODEX_DB = os.path.join(CODEX_DIR, "state_5.sqlite")
+CODEX_CONFIG = os.path.join(CODEX_DIR, "config.toml")
+CODEX_GLOBAL_STATE = os.path.join(CODEX_DIR, ".codex-global-state.json")
 
 def get_antigravity_exe():
     local = os.environ.get("LOCALAPPDATA", "")
@@ -28,6 +45,17 @@ def get_antigravity_exe():
     return p1
 
 EXE_PATH = get_antigravity_exe()
+
+def is_claude_installed():
+    local_apps = os.path.join(os.environ.get("LOCALAPPDATA", ""), "Microsoft", "WindowsApps", "claude-desktop.exe")
+    if os.path.exists(local_apps):
+        return True
+    pkg_dir = os.path.join(os.environ.get("LOCALAPPDATA", ""), "Packages", CLAUDE_PKG)
+    return os.path.exists(pkg_dir)
+
+def is_chatgpt_installed():
+    pkg_dir = os.path.join(os.environ.get("LOCALAPPDATA", ""), "Packages", CHATGPT_PKG)
+    return os.path.exists(pkg_dir) or os.path.exists(CODEX_DIR)
 
 os.makedirs(PROFILES_DIR, exist_ok=True)
 
@@ -252,6 +280,23 @@ def carregar_lista():
                     qtd = len([f for f in os.listdir(d_proj) if f.endswith(".json") and f != "outside-of-project.json"])
                 sufixo = t("projetos_sufixo")
                 lista.insert(tk.END, f"{pasta}  ({qtd} {sufixo})")
+
+def encode_claude_project_dir(path):
+    p = os.path.normpath(path)
+    if len(p) > 1 and p[1] == ":":
+        drive = p[0]
+        rest = p[2:].lstrip("\\")
+        parts = [part.replace(" ", "-") for part in rest.split("\\")]
+        return f"{drive}--" + "-".join(parts)
+    return p.replace(":", "--").replace("\\", "-").replace("/", "-").replace(" ", "-")
+
+def clean_user_text(text):
+    text = re.sub(r'<USER_REQUEST>\s*', '', text)
+    text = re.sub(r'\s*</USER_REQUEST>', '', text)
+    text = re.sub(r'<ADDITIONAL_METADATA>[\s\S]*?</ADDITIONAL_METADATA>', '', text)
+    text = re.sub(r'<CONTEXT_SUMMARY>[\s\S]*?</CONTEXT_SUMMARY>', '', text)
+    return text.strip()
+
 
 def garantir_link_antigravity(pasta_perfil):
     master_ag = os.path.join(os.path.expanduser("~"), ".gemini", "antigravity")
@@ -555,6 +600,7 @@ def mudar_idioma(escolha):
     idioma_atual = sigla
     salvar_idioma(sigla)
     atualizar_textos_interface()
+
 
 janela = tk.Tk()
 janela.geometry("500x510")
