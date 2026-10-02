@@ -602,6 +602,164 @@ def mudar_idioma(escolha):
     atualizar_textos_interface()
 
 
+def sincronizar_antigravity_para_claude(projeto_especifico=None):
+    if not os.path.exists(MASTER_DIR):
+        return {"projetos": 0, "conversas": 0}
+
+    claude_data = {}
+    if os.path.exists(CLAUDE_JSON_PATH):
+        try:
+            with open(CLAUDE_JSON_PATH, "r", encoding="utf-8") as f:
+                claude_data = json.load(f)
+        except:
+            claude_data = {}
+    if "projects" not in claude_data:
+        claude_data["projects"] = {}
+
+    conn = None
+    if os.path.exists(DB_PATH):
+        try:
+            conn = sqlite3.connect(DB_PATH)
+        except:
+            pass
+
+    os.makedirs(CLAUDE_PROJECTS_DIR, exist_ok=True)
+    projetos_sincronizados = 0
+    conversas_sincronizadas = 0
+
+    todos = obter_todos_projetos()
+    for pid, p in todos.items():
+        if projeto_especifico and p["id"] != projeto_especifico and p["name"].lower() != str(projeto_especifico).lower():
+            continue
+        folder = p["path"]
+        if not folder or not os.path.exists(folder):
+            continue
+
+        if folder not in claude_data["projects"]:
+            claude_data["projects"][folder] = {
+                "allowedTools": [],
+                "mcpContextUris": [],
+                "enabledMcpjsonServers": [],
+                "disabledMcpjsonServers": [],
+                "hasTrustDialogAccepted": True,
+                "hasClaudeMdExternalIncludesApproved": False,
+                "hasClaudeMdExternalIncludesWarningShown": False
+            }
+            projetos_sincronizados += 1
+
+        encoded_name = encode_claude_project_dir(folder)
+        target_claude_dir = os.path.join(CLAUDE_PROJECTS_DIR, encoded_name)
+        os.makedirs(target_claude_dir, exist_ok=True)
+
+        if conn:
+            try:
+                rows = conn.execute(
+                    "SELECT conversation_id, title FROM conversation_summaries WHERE project_id = ?",
+                    (pid,)
+                ).fetchall()
+                for r in rows:
+                    cid, title = r
+                    target_file = os.path.join(target_claude_dir, f"{cid}.jsonl")
+                    sub_title_dir = os.path.join(target_claude_dir, cid)
+                    os.makedirs(sub_title_dir, exist_ok=True)
+                    clean_title = title if title and not title.startswith("2c5e") else p["name"]
+                    title_file = os.path.join(sub_title_dir, "custom-title.json")
+                    if not os.path.exists(title_file):
+                        with open(title_file, "w", encoding="utf-8") as tf:
+                            json.dump({"customTitle": clean_title}, tf)
+
+                    if not os.path.exists(target_file) or os.path.getsize(target_file) == 0:
+                        src_transcript = os.path.join(MASTER_AG, "brain", cid, ".system_generated", "logs", "transcript.jsonl")
+                        if os.path.exists(src_transcript):
+                            claude_lines = []
+                            first_prompt = None
+                            prev_uuid = None
+                            with open(src_transcript, "r", encoding="utf-8") as tf:
+                                for line in tf:
+                                    try:
+                                        sd = json.loads(line)
+                                        stype = sd.get("type")
+                                        ts = sd.get("created_at", datetime.now().isoformat() + "Z")
+                                        if stype == "USER_INPUT":
+                                            c = clean_user_text(sd.get("content", ""))
+                                            if not c or c.startswith("<SYSTEM_MESSAGE>"):
+                                                continue
+                                            if first_prompt is None:
+                                                first_prompt = c
+                                                claude_lines.append(json.dumps({
+                                                    "type": "queue-operation",
+                                                    "operation": "enqueue",
+                                                    "timestamp": ts,
+                                                    "sessionId": cid,
+                                                    "content": c[:300]
+                                                }))
+                                                claude_lines.append(json.dumps({
+                                                    "type": "queue-operation",
+                                                    "operation": "dequeue",
+                                                    "timestamp": ts,
+                                                    "sessionId": cid
+                                                }))
+                                            msg_uuid = str(uuid.uuid4())
+                                            claude_lines.append(json.dumps({
+                                                "parentUuid": prev_uuid,
+                                                "isSidechain": False,
+                                                "type": "user",
+                                                "message": {"role": "user", "content": c},
+                                                "uuid": msg_uuid,
+                                                "timestamp": ts,
+                                                "sessionId": cid,
+                                                "cwd": folder
+                                            }))
+                                            prev_uuid = msg_uuid
+                                        elif stype == "PLANNER_RESPONSE":
+                                            c = sd.get("content", "")
+                                            if not c:
+                                                t_calls = sd.get("tool_calls", [])
+                                                if t_calls:
+                                                    names = [tc.get("name", "tool") for tc in t_calls]
+                                                    c = f"Acoes executadas: {', '.join(names)}"
+                                            if not c or not prev_uuid:
+                                                continue
+                                            msg_uuid = str(uuid.uuid4())
+                                            claude_lines.append(json.dumps({
+                                                "parentUuid": prev_uuid,
+                                                "isSidechain": False,
+                                                "type": "assistant",
+                                                "message": {"role": "assistant", "content": [{"type": "text", "text": c}]},
+                                                "uuid": msg_uuid,
+                                                "timestamp": ts,
+                                                "sessionId": cid,
+                                                "cwd": folder
+                                            }))
+                                            prev_uuid = msg_uuid
+                                    except:
+                                        pass
+                            if claude_lines:
+                                if title:
+                                    claude_lines.append(json.dumps({
+                                        "type": "custom-title",
+                                        "customTitle": title,
+                                        "sessionId": cid
+                                    }))
+                                with open(target_file, "w", encoding="utf-8") as out_f:
+                                    for cl in claude_lines:
+                                        out_f.write(cl + "\n")
+                                conversas_sincronizadas += 1
+            except:
+                pass
+
+    if conn:
+        conn.close()
+
+    try:
+        with open(CLAUDE_JSON_PATH, "w", encoding="utf-8") as f:
+            json.dump(claude_data, f, indent=2)
+    except:
+        pass
+
+    return {"projetos": projetos_sincronizados, "conversas": conversas_sincronizadas}
+
+
 janela = tk.Tk()
 janela.geometry("500x510")
 janela.resizable(False, False)
