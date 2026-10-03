@@ -760,6 +760,170 @@ def sincronizar_antigravity_para_claude(projeto_especifico=None):
     return {"projetos": projetos_sincronizados, "conversas": conversas_sincronizadas}
 
 
+def sincronizar_claude_para_antigravity(projeto_especifico=None):
+    if not os.path.exists(CLAUDE_JSON_PATH):
+        return {"projetos": 0, "conversas": 0}
+
+    try:
+        with open(CLAUDE_JSON_PATH, "r", encoding="utf-8") as f:
+            claude_data = json.load(f)
+    except:
+        return {"projetos": 0, "conversas": 0}
+
+    claude_projects = claude_data.get("projects", {})
+    os.makedirs(MASTER_DIR, exist_ok=True)
+
+    ag_paths = {}
+    for f in os.listdir(MASTER_DIR):
+        if not f.endswith(".json") or f == "outside-of-project.json":
+            continue
+        try:
+            with open(os.path.join(MASTER_DIR, f), "r", encoding="utf-8") as fp:
+                d = json.load(fp)
+            res = d.get("projectResources", {}).get("resources", [])
+            raw_uri = ""
+            if res:
+                item = res[0]
+                if "folderUri" in item:
+                    raw_uri = item["folderUri"]
+                elif "gitFolder" in item:
+                    raw_uri = item["gitFolder"].get("folderUri", "")
+                elif "workspaceUri" in item:
+                    raw_uri = item["workspaceUri"]
+            if raw_uri:
+                folder = urllib.parse.unquote(raw_uri.replace("file:///", "").replace("file://", ""))
+                folder = folder.replace("/", "\\")
+                if len(folder) > 1 and folder[1] == ":":
+                    pass
+                elif len(folder) > 2 and folder[2] == ":":
+                    folder = folder[1:]
+                folder = os.path.normpath(folder)
+                ag_paths[folder.lower()] = d.get("id")
+        except:
+            pass
+
+    conn = None
+    if os.path.exists(DB_PATH):
+        try:
+            conn = sqlite3.connect(DB_PATH)
+        except:
+            pass
+
+    novos_projetos = 0
+    conversas_convertidas = 0
+
+    for path in claude_projects.keys():
+        norm_path = os.path.normpath(path)
+        if not os.path.exists(norm_path):
+            continue
+        if projeto_especifico and os.path.basename(norm_path).lower() != str(projeto_especifico).lower() and norm_path.lower() != str(projeto_especifico).lower():
+            continue
+
+        pid = ag_paths.get(norm_path.lower())
+        if not pid:
+            pid = str(uuid.uuid4())
+            pname = os.path.basename(norm_path)
+            folder_uri = f"file:///{norm_path.replace(os.sep, '/')}"
+            ag_proj_data = {
+                "id": pid,
+                "name": pname,
+                "projectResources": {
+                    "resources": [{"folderUri": folder_uri}]
+                },
+                "settings": {},
+                "isWorkspaceOnly": False
+            }
+            with open(os.path.join(MASTER_DIR, f"{pid}.json"), "w", encoding="utf-8") as fp:
+                json.dump(ag_proj_data, fp, indent=2)
+            ag_paths[norm_path.lower()] = pid
+            novos_projetos += 1
+
+        encoded_name = encode_claude_project_dir(norm_path)
+        claude_dir = os.path.join(CLAUDE_PROJECTS_DIR, encoded_name)
+        if os.path.exists(claude_dir):
+            for cf in os.listdir(claude_dir):
+                if cf.endswith(".jsonl") and not cf.endswith(".desktop-released.json"):
+                    session_id = os.path.splitext(cf)[0]
+                    ag_transcript = os.path.join(MASTER_AG, "brain", session_id, ".system_generated", "logs", "transcript.jsonl")
+                    if not os.path.exists(ag_transcript):
+                        cpath = os.path.join(claude_dir, cf)
+                        steps = []
+                        step_idx = 0
+                        title = os.path.basename(norm_path)
+                        first_preview = ""
+                        last_mtime = ""
+                        with open(cpath, "r", encoding="utf-8") as f_in:
+                            for line in f_in:
+                                try:
+                                    sd = json.loads(line)
+                                    stype = sd.get("type")
+                                    ts = sd.get("timestamp", "")
+                                    if ts:
+                                        last_mtime = ts
+                                    if stype == "custom-title":
+                                        title = sd.get("customTitle", title)
+                                    elif stype == "user":
+                                        msg = sd.get("message", {})
+                                        content = msg.get("content", "")
+                                        if isinstance(content, list):
+                                            parts = [p.get("text", "") for p in content if isinstance(p, dict) and p.get("type") == "text"]
+                                            content = "\n".join(parts)
+                                        if content:
+                                            if not first_preview:
+                                                first_preview = content[:80]
+                                            steps.append({
+                                                "step_index": step_idx,
+                                                "source": "USER_EXPLICIT",
+                                                "type": "USER_INPUT",
+                                                "status": "DONE",
+                                                "created_at": ts,
+                                                "content": f"<USER_REQUEST>\n{content}\n</USER_REQUEST>"
+                                            })
+                                            step_idx += 1
+                                    elif stype == "assistant":
+                                        msg = sd.get("message", {})
+                                        content = msg.get("content", "")
+                                        if isinstance(content, list):
+                                            parts = [p.get("text", "") for p in content if isinstance(p, dict) and p.get("type") == "text"]
+                                            content = "\n".join(parts)
+                                        if content:
+                                            steps.append({
+                                                "step_index": step_idx,
+                                                "source": "MODEL",
+                                                "type": "PLANNER_RESPONSE",
+                                                "status": "DONE",
+                                                "created_at": ts,
+                                                "content": content
+                                            })
+                                            step_idx += 1
+                                except:
+                                    pass
+                        if steps:
+                            os.makedirs(os.path.dirname(ag_transcript), exist_ok=True)
+                            with open(ag_transcript, "w", encoding="utf-8") as out_t:
+                                for s in steps:
+                                    out_t.write(json.dumps(s) + "\n")
+                            if conn:
+                                folder_uri = f"file:///{norm_path.replace(os.sep, '/')}"
+                                uris_json = json.dumps([folder_uri])
+                                mtime = last_mtime if last_mtime else datetime.now().isoformat() + "+00:00"
+                                conn.execute("""
+                                    INSERT OR REPLACE INTO conversation_summaries
+                                    (conversation_id, title, preview, step_count, last_modified_time, workspace_uris,
+                                     status, source, project_id, agent_name, parent_conversation_id, nesting_depth,
+                                     battle_id, winning_conversation_id, not_fully_idle, killed, last_user_input_time,
+                                     last_user_input_step_index, app_data_dir, group_id)
+                                    VALUES (?, ?, ?, ?, ?, ?, 'CASCADE_RUN_STATUS_IDLE', '', ?, '', '', 0, '', '', 0, 0, ?, 0, 'antigravity', '')
+                                """, (session_id, title, first_preview, len(steps), mtime, uris_json, pid, mtime))
+                                conn.commit()
+                            conversas_convertidas += 1
+
+    if conn:
+        conn.close()
+
+    return {"projetos": novos_projetos, "conversas": conversas_convertidas}
+
+
 janela = tk.Tk()
 janela.geometry("500x510")
 janela.resizable(False, False)
