@@ -924,6 +924,362 @@ def sincronizar_claude_para_antigravity(projeto_especifico=None):
     return {"projetos": novos_projetos, "conversas": conversas_convertidas}
 
 
+def sincronizar_todos_para_chatgpt():
+    if not os.path.exists(CODEX_DIR):
+        return {"projects": 0, "threads": 0}
+
+    projetos_unificados = {}
+
+    if os.path.exists(MASTER_DIR):
+        for f in os.listdir(MASTER_DIR):
+            if not f.endswith(".json") or f == "outside-of-project.json":
+                continue
+            try:
+                with open(os.path.join(MASTER_DIR, f), "r", encoding="utf-8") as jf:
+                    d = json.load(jf)
+                res = d.get("projectResources", {}).get("resources", [])
+                raw_uri = ""
+                if res:
+                    item = res[0]
+                    if "folderUri" in item:
+                        raw_uri = item["folderUri"]
+                    elif "gitFolder" in item:
+                        raw_uri = item["gitFolder"].get("folderUri", "")
+                    elif "workspaceUri" in item:
+                        raw_uri = item["workspaceUri"]
+                if raw_uri:
+                    folder = urllib.parse.unquote(raw_uri.replace("file:///", "").replace("file://", ""))
+                    folder = folder.replace("/", "\\")
+                    if len(folder) > 1 and folder[1] == ":":
+                        pass
+                    elif len(folder) > 2 and folder[2] == ":":
+                        folder = folder[1:]
+                    folder = os.path.normpath(folder)
+                    name = d.get("name") or os.path.basename(folder)
+                    k = folder.lower()
+                    if k not in projetos_unificados:
+                        projetos_unificados[k] = {"name": name, "path": folder, "ag_id": d.get("id", f[:-5])}
+            except:
+                pass
+
+    if os.path.exists(CLAUDE_JSON_PATH):
+        try:
+            with open(CLAUDE_JSON_PATH, "r", encoding="utf-8") as jf:
+                cdata = json.load(jf)
+            for cp in cdata.get("projects", {}).keys():
+                p = os.path.normpath(cp.replace("/", "\\"))
+                k = p.lower()
+                if k not in projetos_unificados:
+                    projetos_unificados[k] = {"name": os.path.basename(p), "path": p}
+        except:
+            pass
+
+    if os.path.exists(CODEX_DB):
+        try:
+            cconn = sqlite3.connect(CODEX_DB)
+            for pid, pos, path in cconn.execute("SELECT project_id, position, path FROM project_roots").fetchall():
+                p = os.path.normpath(path.replace("/", "\\"))
+                k = p.lower()
+                r = cconn.execute("SELECT name FROM projects WHERE id = ?", (pid,)).fetchone()
+                pname = r[0] if r else os.path.basename(p)
+                if k not in projetos_unificados:
+                    projetos_unificados[k] = {"name": pname, "path": p, "codex_pid": pid}
+                else:
+                    projetos_unificados[k]["codex_pid"] = pid
+            cconn.close()
+        except:
+            pass
+
+    projetos_unificados = {k: v for k, v in projetos_unificados.items() if os.path.exists(v["path"])}
+
+    claude_data = {}
+    if os.path.exists(CLAUDE_JSON_PATH):
+        try:
+            with open(CLAUDE_JSON_PATH, "r", encoding="utf-8") as jf:
+                claude_data = json.load(jf)
+        except:
+            claude_data = {}
+    claude_projects = claude_data.setdefault("projects", {})
+    for pinfo in projetos_unificados.values():
+        folder = pinfo["path"]
+        if folder not in claude_projects:
+            claude_projects[folder] = {
+                "allowedTools": [],
+                "mcpContextUris": [],
+                "enabledMcpjsonServers": [],
+                "disabledMcpjsonServers": [],
+                "hasTrustDialogAccepted": True,
+                "hasClaudeMdExternalIncludesApproved": False,
+                "hasClaudeMdExternalIncludesWarningShown": False
+            }
+    try:
+        with open(CLAUDE_JSON_PATH, "w", encoding="utf-8") as jf:
+            json.dump(claude_data, jf, indent=2)
+    except:
+        pass
+
+    os.makedirs(MASTER_DIR, exist_ok=True)
+    existing_ag_paths = set()
+    for f in os.listdir(MASTER_DIR):
+        if not f.endswith(".json") or f == "outside-of-project.json":
+            continue
+        try:
+            with open(os.path.join(MASTER_DIR, f), "r", encoding="utf-8") as fp:
+                d = json.load(fp)
+            res = d.get("projectResources", {}).get("resources", [])
+            raw_uri = ""
+            if res:
+                item = res[0]
+                if "folderUri" in item:
+                    raw_uri = item["folderUri"]
+                elif "gitFolder" in item:
+                    raw_uri = item["gitFolder"].get("folderUri", "")
+                elif "workspaceUri" in item:
+                    raw_uri = item["workspaceUri"]
+            if raw_uri:
+                folder = urllib.parse.unquote(raw_uri.replace("file:///", "").replace("file://", ""))
+                folder = os.path.normpath(folder.replace("/", "\\"))
+                existing_ag_paths.add(folder.lower())
+        except:
+            pass
+
+    for pinfo in projetos_unificados.values():
+        folder = pinfo["path"]
+        if folder.lower() not in existing_ag_paths:
+            new_id = str(uuid.uuid4())
+            pname = pinfo["name"]
+            folder_uri = f"file:///{folder.replace('\\', '/')}"
+            ag_proj_data = {
+                "id": new_id,
+                "name": pname,
+                "projectResources": {
+                    "resources": [{"folderUri": folder_uri}]
+                },
+                "settings": {},
+                "isWorkspaceOnly": False
+            }
+            try:
+                with open(os.path.join(MASTER_DIR, f"{new_id}.json"), "w", encoding="utf-8") as fp:
+                    json.dump(ag_proj_data, fp, indent=2)
+                existing_ag_paths.add(folder.lower())
+                pinfo["ag_id"] = new_id
+            except:
+                pass
+
+    novos_projetos = 0
+    novas_threads = 0
+
+    if os.path.exists(CODEX_DB):
+        conn = sqlite3.connect(CODEX_DB)
+        existing_roots = {}
+        for pid, pos, path in conn.execute("SELECT project_id, position, path FROM project_roots").fetchall():
+            existing_roots[os.path.normpath(path.replace("/", "\\")).lower()] = pid
+
+        r = conn.execute("SELECT MAX(position) FROM projects").fetchone()
+        current_pos = (r[0] if r and r[0] is not None else 0) + 1
+        now_ms = int(time.time() * 1000)
+        now_sec = int(time.time())
+        paths_to_trust = []
+
+        for pinfo in projetos_unificados.values():
+            folder = pinfo["path"]
+            k = folder.lower()
+            if k not in existing_roots:
+                new_pid = str(uuid.uuid4())
+                conn.execute(
+                    "INSERT INTO projects (id, name, metadata, position, created_at_ms, updated_at_ms) VALUES (?, ?, '{}', ?, ?, ?)",
+                    (new_pid, pinfo["name"], current_pos, now_ms, now_ms)
+                )
+                conn.execute(
+                    "INSERT INTO project_roots (project_id, position, path) VALUES (?, 0, ?)",
+                    (new_pid, folder)
+                )
+                existing_roots[k] = new_pid
+                pinfo["codex_pid"] = new_pid
+                current_pos += 1
+                novos_projetos += 1
+                paths_to_trust.append(folder)
+            else:
+                pinfo["codex_pid"] = existing_roots[k]
+
+        existing_threads = set(r[0] for r in conn.execute("SELECT id FROM threads").fetchall())
+
+        ag_rows = []
+        if os.path.exists(DB_PATH):
+            try:
+                conn_ag = sqlite3.connect(DB_PATH)
+                ag_rows = conn_ag.execute("SELECT conversation_id, title, preview, last_modified_time, project_id FROM conversation_summaries").fetchall()
+                conn_ag.close()
+            except:
+                ag_rows = []
+
+        ag_id_to_pinfo = {pinfo.get("ag_id"): pinfo for pinfo in projetos_unificados.values() if pinfo.get("ag_id")}
+
+        for cid, title, preview, mtime, pid in ag_rows:
+            if cid in existing_threads:
+                continue
+            pinfo = ag_id_to_pinfo.get(pid)
+            if not pinfo:
+                continue
+            folder = pinfo["path"]
+            clean_title = title if title and not title.startswith("2c5e") else pinfo["name"]
+            first_msg = preview if preview else clean_title
+
+            today_str = datetime.now().strftime("%Y\\%m\\%d")
+            rollout_dir = os.path.join(CODEX_DIR, "sessions", today_str)
+            os.makedirs(rollout_dir, exist_ok=True)
+            rollout_filename = f"rollout-{datetime.now().strftime('%Y-%m-%dT%H-%M-%S')}-{cid}.jsonl"
+            rollout_path = os.path.normpath(os.path.join(rollout_dir, rollout_filename))
+
+            try:
+                with open(rollout_path, "w", encoding="utf-8") as rf:
+                    rf.write(json.dumps({
+                        "timestamp": datetime.now().isoformat() + "Z",
+                        "ordinal": 0,
+                        "type": "session_meta",
+                        "payload": {
+                            "session_id": cid,
+                            "id": cid,
+                            "timestamp": datetime.now().isoformat() + "Z",
+                            "cwd": f"\\\\?\\{folder}",
+                            "originator": "Codex Desktop",
+                            "cli_version": "0.158.0-alpha.2"
+                        }
+                    }) + "\n")
+                    rf.write(json.dumps({
+                        "timestamp": datetime.now().isoformat() + "Z",
+                        "ordinal": 1,
+                        "type": "event_msg",
+                        "payload": {
+                            "type": "task_started",
+                            "turn_id": "turn-1",
+                            "started_at": now_sec
+                        }
+                    }) + "\n")
+
+                codex_project_id = pinfo["codex_pid"]
+                conn.execute("""
+                    INSERT INTO threads (
+                        id, rollout_path, created_at, updated_at, source, model_provider, cwd,
+                        title, sandbox_policy, approval_mode, tokens_used, has_user_event, archived,
+                        cli_version, first_user_message, memory_mode, model, preview,
+                        recency_at, recency_at_ms, history_mode, name, is_pinned,
+                        project_id, originator
+                    ) VALUES (
+                        ?, ?, ?, ?, 'vscode', 'openai', ?,
+                        ?, '{"type":"managed"}', 'on-request', 100, 1, 0,
+                        '0.158.0-alpha.2', ?, 'enabled', 'gpt-6-astra', ?,
+                        ?, ?, 'paginated', ?, 0,
+                        ?, 'Codex Desktop'
+                    )
+                """, (
+                    cid, f"\\\\?\\{rollout_path}", now_sec, now_sec, f"\\\\?\\{folder}",
+                    clean_title, first_msg, first_msg,
+                    now_sec, now_ms, clean_title,
+                    codex_project_id
+                ))
+                existing_threads.add(cid)
+                novas_threads += 1
+            except:
+                pass
+
+        conn.commit()
+        conn.close()
+
+        if os.path.exists(CODEX_CONFIG) and paths_to_trust:
+            try:
+                with open(CODEX_CONFIG, "r", encoding="utf-8") as f:
+                    content = f.read()
+                new_sections = []
+                for p in paths_to_trust:
+                    sec_header = f"[projects.'{p.lower()}']"
+                    if sec_header not in content.lower():
+                        new_sections.append(f"\n[projects.'{p}']\ntrust_level = \"trusted\"")
+                if new_sections:
+                    with open(CODEX_CONFIG, "a", encoding="utf-8") as f:
+                        f.write("\n".join(new_sections) + "\n")
+            except:
+                pass
+
+    if os.path.exists(CODEX_GLOBAL_STATE):
+        try:
+            with open(CODEX_GLOBAL_STATE, "r", encoding="utf-8") as f:
+                state = json.load(f)
+
+            now_ms = int(time.time() * 1000)
+            local_projects = state.setdefault("local-projects", {})
+            project_order = state.setdefault("project-order", [])
+            host_key = r"local:C:\Users\tokugawa\.codex"
+            host_map = state.setdefault("app-server-project-id-by-legacy-project-id-by-host", {}).setdefault(host_key, {})
+            thread_assign = state.setdefault("thread-project-assignments", {})
+            thread_hosts = state.setdefault("thread-project-membership-host-ids", {})
+            thread_roots = state.setdefault("thread-writable-roots", {})
+            sidebar_orders = state.setdefault("sidebar-project-thread-orders", {})
+
+            reverse_host_map = {v: k for k, v in host_map.items()}
+
+            existing_lp_paths = {}
+            for leg_id, pdata in local_projects.items():
+                for r in pdata.get("rootPaths", []):
+                    existing_lp_paths[os.path.normpath(r.replace("/", "\\")).lower()] = leg_id
+
+            for pinfo in projetos_unificados.values():
+                folder = pinfo["path"]
+                k = folder.lower()
+                codex_pid = pinfo.get("codex_pid", str(uuid.uuid4()))
+
+                if k in existing_lp_paths:
+                    leg_id = existing_lp_paths[k]
+                else:
+                    leg_id = reverse_host_map.get(codex_pid, codex_pid)
+                    local_projects[leg_id] = {
+                        "id": leg_id,
+                        "name": pinfo["name"],
+                        "rootPaths": [folder],
+                        "createdAt": now_ms,
+                        "updatedAt": now_ms
+                    }
+                    existing_lp_paths[k] = leg_id
+                    if leg_id not in project_order:
+                        project_order.append(leg_id)
+                    host_map[leg_id] = codex_pid
+                    reverse_host_map[codex_pid] = leg_id
+
+            if os.path.exists(CODEX_DB):
+                conn = sqlite3.connect(CODEX_DB)
+                threads_db = conn.execute("SELECT id, project_id, cwd FROM threads").fetchall()
+                conn.close()
+
+                for tid, t_pid, t_cwd in threads_db:
+                    if not t_pid and t_cwd:
+                        clean_cwd = t_cwd
+                        if clean_cwd.startswith("\\\\?\\"):
+                            clean_cwd = clean_cwd[4:]
+                        norm_cwd = os.path.normpath(clean_cwd.replace("/", "\\")).lower()
+                        if norm_cwd in existing_lp_paths:
+                            leg_id = existing_lp_paths[norm_cwd]
+                            t_pid = host_map.get(leg_id)
+
+                    if t_pid:
+                        leg_id = reverse_host_map.get(t_pid, t_pid)
+                        thread_assign[tid] = {
+                            "projectKind": "local",
+                            "projectId": leg_id
+                        }
+                        thread_hosts[tid] = "local"
+                        thread_roots[tid] = [t_cwd]
+                        sidebar_orders.setdefault(leg_id, [])
+                        if tid not in sidebar_orders[leg_id]:
+                            sidebar_orders[leg_id].append(tid)
+
+            with open(CODEX_GLOBAL_STATE, "w", encoding="utf-8") as f:
+                json.dump(state, f, indent=2)
+        except:
+            pass
+
+    return {"projects": novos_projetos, "threads": novas_threads}
+
+
 janela = tk.Tk()
 janela.geometry("500x510")
 janela.resizable(False, False)
