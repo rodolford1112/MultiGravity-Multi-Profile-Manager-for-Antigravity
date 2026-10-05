@@ -1280,6 +1280,125 @@ def sincronizar_todos_para_chatgpt():
     return {"projects": novos_projetos, "threads": novas_threads}
 
 
+def executar_sincronizacao_universal():
+    res1 = sincronizar_antigravity_para_claude()
+    res2 = sincronizar_claude_para_antigravity()
+    res3 = sincronizar_todos_para_chatgpt()
+    carregar_lista_projetos()
+    messagebox.showinfo(
+        t("t_sucesso"),
+        t(
+            "sucesso_sync",
+            p_ag=res1["projetos"],
+            c_ag=res1["conversas"],
+            p_cl=res2["projetos"],
+            c_cl=res2["conversas"],
+            p_gpt=res3["projects"],
+            c_gpt=res3["threads"]
+        )
+    )
+
+def executar_sincronizacao_projeto_atual():
+    if not PROJETO_SELECIONADO:
+        messagebox.showwarning(t("t_aviso"), t("aviso_selecao_proj"))
+        return
+    pid = PROJETO_SELECIONADO.get("id")
+    pname = PROJETO_SELECIONADO.get("name")
+    sincronizar_antigravity_para_claude(pid)
+    sincronizar_claude_para_antigravity(pname)
+    sincronizar_todos_para_chatgpt()
+    carregar_lista_projetos()
+    messagebox.showinfo(t("t_sucesso"), t("sucesso_sync_proj", nome=pname))
+
+def gerar_contexto_markdown(project_id):
+    todos = obter_todos_projetos()
+    p_info = todos.get(project_id)
+    if not p_info:
+        for p in todos.values():
+            if p["name"].lower() == str(project_id).lower():
+                p_info = p
+                project_id = p["id"]
+                break
+    if not p_info:
+        return t("erro_sem_pasta")
+
+    pname = p_info["name"]
+    ppath = p_info["path"]
+    total_chats = p_info["chats"]
+
+    linhas = []
+    linhas.append(f"# AI Context Bridge: {pname}")
+    linhas.append(f"- Diretório Local: {ppath if ppath else 'Nao vinculado'}")
+    linhas.append(f"- Total de Conversas no Antigravity: {total_chats}")
+    linhas.append(f"- Sincronizado em: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    linhas.append("")
+    linhas.append("## Resumo Recente e Atividades Realizadas")
+
+    if not os.path.exists(DB_PATH):
+        linhas.append("Banco de conversas do Antigravity nao encontrado.")
+        return "\n".join(linhas)
+
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        rows = conn.execute(
+            "SELECT conversation_id, title, preview, last_modified_time FROM conversation_summaries WHERE project_id = ? ORDER BY last_modified_time DESC LIMIT 4",
+            (project_id,)
+        ).fetchall()
+        conn.close()
+    except:
+        rows = []
+
+    if not rows:
+        linhas.append("Nenhuma sessao anterior registrada para este projeto.")
+        return "\n".join(linhas)
+
+    for r in rows:
+        cid, title, preview, mtime = r
+        clean_title = title if title and len(title) > 2 and not title.startswith("2c5e") else "Sessao de Desenvolvimento"
+        data_str = mtime[:10] if mtime else ""
+        linhas.append(f"### {clean_title} ({data_str})")
+
+        t_path = os.path.join(MASTER_AG, "brain", cid, ".system_generated", "logs", "transcript.jsonl")
+        if os.path.exists(t_path):
+            user_prompts = []
+            files_touched = set()
+            try:
+                with open(t_path, "r", encoding="utf-8") as f:
+                    for line in f:
+                        try:
+                            d = json.loads(line)
+                            stype = d.get("type")
+                            if stype == "USER_INPUT":
+                                c = clean_user_text(d.get("content", ""))
+                                if c and not c.startswith("<SYSTEM_MESSAGE>") and len(c) > 3:
+                                    user_prompts.append(c)
+                            elif stype == "PLANNER_RESPONSE":
+                                t_calls = d.get("tool_calls", [])
+                                for tc in t_calls:
+                                    args = tc.get("args", {})
+                                    for k in ["TargetFile", "AbsolutePath"]:
+                                        if k in args:
+                                            files_touched.add(os.path.basename(args[k]))
+                        except:
+                            pass
+            except:
+                pass
+
+            if user_prompts:
+                linhas.append("**Solicitacoes do usuario:**")
+                for u in user_prompts[-3:]:
+                    primeira_linha = u.split("\n")[0].strip()
+                    linhas.append(f"- {primeira_linha[:140]}")
+            if files_touched:
+                arquivos_str = ", ".join(sorted(files_touched)[:6])
+                linhas.append(f"**Arquivos trabalhados:** `{arquivos_str}`")
+        linhas.append("")
+
+    linhas.append("## Instrucoes para Claude Desktop / ChatGPT")
+    linhas.append("Voce esta trabalhando neste mesmo projeto. Utilize o historico de tarefas e contexto acima para manter coerencia com o trabalho ja realizado no Antigravity.")
+    return "\n".join(linhas)
+
+
 janela = tk.Tk()
 janela.geometry("500x510")
 janela.resizable(False, False)
