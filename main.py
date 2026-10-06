@@ -1399,6 +1399,82 @@ def gerar_contexto_markdown(project_id):
     return "\n".join(linhas)
 
 
+def executar_antigravity(nome_perfil, pasta_alvo=None):
+    if not nome_perfil:
+        perfis = obter_nomes_perfis()
+        if perfis:
+            nome_perfil = perfis[0]
+        else:
+            nome_perfil = "Default"
+
+    pasta_perfil = os.path.join(PROFILES_DIR, nome_perfil)
+    data_dir = os.path.join(pasta_perfil, "data")
+    home_dir = os.path.join(pasta_perfil, "home")
+    pasta_proj = os.path.join(home_dir, ".gemini", "config", "projects")
+    os.makedirs(data_dir, exist_ok=True)
+    os.makedirs(pasta_proj, exist_ok=True)
+    garantir_link_antigravity(pasta_perfil)
+
+    outside_file = os.path.join(pasta_proj, "outside-of-project.json")
+    if not os.path.exists(outside_file):
+        with open(outside_file, "w", encoding="utf-8") as fp:
+            json.dump({"id": "outside-of-project", "name": "Outside of Project"}, fp)
+
+    env = os.environ.copy()
+    env["USERPROFILE"] = home_dir
+    env["SSH_CONNECTION"] = "127.0.0.1 1234 127.0.0.1 22"
+    env["SSH_CLIENT"] = "127.0.0.1 1234 22"
+    cmd = [EXE_PATH, f"--user-data-dir={data_dir}"]
+    if pasta_alvo and os.path.exists(pasta_alvo):
+        cmd.append(pasta_alvo)
+
+    subprocess.Popen(
+        cmd,
+        env=env,
+        cwd=os.path.dirname(EXE_PATH),
+        creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP
+    )
+
+def executar_claude(pasta_alvo=None):
+    cmd = ["explorer.exe", f"shell:appsFolder\\{CLAUDE_PKG}!Claude"]
+    subprocess.Popen(cmd)
+    if pasta_alvo and os.path.exists(pasta_alvo):
+        try:
+            sincronizar_antigravity_para_claude(os.path.basename(pasta_alvo))
+            ctx = gerar_contexto_markdown(os.path.basename(pasta_alvo))
+            janela.clipboard_clear()
+            janela.clipboard_append(ctx)
+            messagebox.showinfo(
+                t("t_info"),
+                f"Claude Desktop aberto!\n\nOs chats e o contexto de '{os.path.basename(pasta_alvo)}' foram sincronizados e copiados para sua Area de Transferencia.\nBasta pressionar Ctrl+V no chat do Claude."
+            )
+        except:
+            pass
+
+def executar_chatgpt(pasta_alvo=None):
+    cmd = ["explorer.exe", f"shell:appsFolder\\{CHATGPT_PKG}!App"]
+    subprocess.Popen(cmd)
+    if pasta_alvo and os.path.exists(pasta_alvo):
+        try:
+            sincronizar_antigravity_para_claude(os.path.basename(pasta_alvo))
+            sincronizar_todos_para_chatgpt()
+            ctx = gerar_contexto_markdown(os.path.basename(pasta_alvo))
+            janela.clipboard_clear()
+            janela.clipboard_append(ctx)
+            messagebox.showinfo(
+                t("t_info"),
+                f"ChatGPT Desktop aberto!\n\nOs chats e o contexto de '{os.path.basename(pasta_alvo)}' foram sincronizados e copiados para sua Area de Transferencia.\nBasta pressionar Ctrl+V no chat do ChatGPT."
+            )
+        except:
+            pass
+
+def abrir_pasta_explorer(caminho):
+    if caminho and os.path.exists(caminho):
+        os.startfile(caminho)
+    else:
+        messagebox.showwarning(t("t_aviso"), t("erro_sem_pasta"))
+
+
 janela = tk.Tk()
 janela.geometry("500x510")
 janela.resizable(False, False)
