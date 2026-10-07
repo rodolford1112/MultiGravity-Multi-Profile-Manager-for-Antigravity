@@ -61,19 +61,24 @@ os.makedirs(PROFILES_DIR, exist_ok=True)
 
 TEXTOS = {
     "pt": {
-        "title": "Gerenciador de Perfis Antigravity",
+        "title": "MultiGravity - Universal AI Hub & Profile Manager",
+        "tab_perfis": "Perfis Antigravity",
+        "tab_projetos": "Central de Projetos (Hub)",
+        "tab_ponte": "Ponte de Memória & Sincronizador",
         "frame_create": "Criar Novo Perfil",
         "lbl_nome": "Nome:",
         "btn_add": "Adicionar",
         "chk_copiar": "Compartilhar todos os projetos neste novo perfil",
-        "frame_perfis": "Perfis",
+        "frame_perfis": "Perfis Cadastrados",
         "btn_abrir": "Abrir Perfil Selecionado",
         "btn_proj": "Compartilhar Projetos do Perfil",
         "btn_atalho": "Criar Atalho na Area de Trabalho",
         "btn_del": "Excluir Perfil",
         "lbl_idioma": "Idioma:",
         "projetos_sufixo": "projetos",
+        "conversas_sufixo": "conversas",
         "aviso_selecao": "Selecione um perfil na lista!",
+        "aviso_selecao_proj": "Selecione um projeto na lista!",
         "aviso_nome": "Digite um nome para o perfil!",
         "aviso_nome_invalido": "Nome invalido! Nao use caracteres especiais (< > : \" / \\ | ? *) nem termine com espaco ou ponto.",
         "erro_existe": "Ja existe um perfil com esse nome!",
@@ -82,7 +87,7 @@ TEXTOS = {
         "confirma_del": "Tem certeza que deseja apagar o perfil '{nome}' e todos os dados dele?",
         "top_titulo": "Compartilhar Projetos - {nome}",
         "top_aviso": "Selecione os projetos visiveis para: {nome}",
-        "filtrar": "Filtrar:",
+        "filtrar": "Filtrar Projetos:",
         "marcar_todos": "Marcar Todos",
         "desmarcar_todos": "Desmarcar Todos",
         "btn_salvar": "Salvar Alteracoes",
@@ -93,22 +98,51 @@ TEXTOS = {
         "t_erro": "Erro",
         "t_sucesso": "Sucesso",
         "t_confirma": "Confirmar",
-        "t_info": "Info"
+        "t_info": "Info",
+        "lbl_acoes_ia": "Acoes para o Projeto Selecionado:",
+        "btn_abrir_ag": "Abrir no Antigravity",
+        "btn_abrir_claude": "Abrir no Claude Desktop",
+        "btn_abrir_chatgpt": "Abrir no ChatGPT Desktop",
+        "btn_abrir_pasta": "Abrir Pasta no Explorer",
+        "lbl_perfil_alvo": "Perfil:",
+        "lbl_status_detect": "Status das IAs:",
+        "status_instalado": "Instalado",
+        "status_nao_encontrado": "Nao Detectado",
+        "lbl_selecione_proj": "Selecione um projeto na lista acima.",
+        "btn_copiar_ctx": "Copiar Contexto para Clipboard (Prompt Pronto)",
+        "btn_exportar_ctx": "Salvar .ai-context.md na Pasta do Projeto",
+        "btn_atualizar_ctx": "Atualizar Pre-visualizacao",
+        "sucesso_copiado": "Contexto copiado para a Area de Transferencia!\nBasta colar (Ctrl+V) no Claude ou ChatGPT.",
+        "sucesso_exportado": "Arquivo .ai-context.md criado com sucesso em:\n{caminho}",
+        "erro_sem_pasta": "Este projeto nao possui pasta fisica vinculada no disco.",
+        "preview_titulo": "Pre-visualizacao do Contexto Compartilhado:",
+        "lbl_caminho_proj": "Caminho no Disco:",
+        "lbl_conversas_proj": "Total de Conversas:",
+        "lbl_projeto_topo": "Projeto:",
+        "btn_sync_universal": "Sincronizar Todos os Projetos & Chats (Antigravity <-> Claude <-> ChatGPT)",
+        "btn_sync_este_proj": "Sincronizar Chats Deste Projeto com Claude & ChatGPT",
+        "sucesso_sync": "Sincronizacao universal concluida!\n\n- Antigravity -> Claude: {p_ag} projetos, {c_ag} conversas.\n- Claude -> Antigravity: {p_cl} projetos, {c_cl} conversas.\n- ChatGPT / Codex: {p_gpt} projetos, {c_gpt} conversas sincronizadas.\n\nTodos os modelos agora compartilham todos os projetos e chats!",
+        "sucesso_sync_proj": "Chats do projeto '{nome}' sincronizados com sucesso entre Antigravity, Claude e ChatGPT!"
     },
     "en": {
-        "title": "Antigravity Profile Manager",
+        "title": "MultiGravity - Universal AI Hub & Profile Manager",
+        "tab_perfis": "Antigravity Profiles",
+        "tab_projetos": "Projects Hub",
+        "tab_ponte": "Cross-AI Memory & Sync",
         "frame_create": "Create New Profile",
         "lbl_nome": "Name:",
         "btn_add": "Add",
         "chk_copiar": "Share all projects in this new profile",
-        "frame_perfis": "Profiles",
+        "frame_perfis": "Registered Profiles",
         "btn_abrir": "Open Selected Profile",
         "btn_proj": "Share Profile Projects",
         "btn_atalho": "Create Desktop Shortcut",
         "btn_del": "Delete Profile",
         "lbl_idioma": "Language:",
         "projetos_sufixo": "projects",
+        "conversas_sufixo": "conversations",
         "aviso_selecao": "Select a profile from the list!",
+        "aviso_selecao_proj": "Select a project from the list!",
         "aviso_nome": "Enter a name for the profile!",
         "aviso_nome_invalido": "Invalid profile name! Do not use special characters (< > : \" / \\ | ? *) or trailing spaces/dots.",
         "erro_existe": "A profile with this name already exists!",
@@ -117,7 +151,7 @@ TEXTOS = {
         "confirma_del": "Are you sure you want to delete profile '{nome}' and all its data?",
         "top_titulo": "Share Projects - {nome}",
         "top_aviso": "Select visible projects for: {nome}",
-        "filtrar": "Filter:",
+        "filtrar": "Filter Projects:",
         "marcar_todos": "Select All",
         "desmarcar_todos": "Deselect All",
         "btn_salvar": "Save Changes",
@@ -128,22 +162,51 @@ TEXTOS = {
         "t_erro": "Error",
         "t_sucesso": "Success",
         "t_confirma": "Confirm",
-        "t_info": "Info"
+        "t_info": "Info",
+        "lbl_acoes_ia": "Actions for Selected Project:",
+        "btn_abrir_ag": "Open in Antigravity",
+        "btn_abrir_claude": "Open in Claude Desktop",
+        "btn_abrir_chatgpt": "Open in ChatGPT Desktop",
+        "btn_abrir_pasta": "Open Folder in Explorer",
+        "lbl_perfil_alvo": "Profile:",
+        "lbl_status_detect": "AI Apps Status:",
+        "status_instalado": "Installed",
+        "status_nao_encontrado": "Not Detected",
+        "lbl_selecione_proj": "Select a project from the list above.",
+        "btn_copiar_ctx": "Copy Context to Clipboard (Ready Prompt)",
+        "btn_exportar_ctx": "Save .ai-context.md in Project Folder",
+        "btn_atualizar_ctx": "Refresh Preview",
+        "sucesso_copiado": "Context copied to Clipboard!\nPress Ctrl+V in Claude or ChatGPT.",
+        "sucesso_exportado": "File .ai-context.md created successfully at:\n{caminho}",
+        "erro_sem_pasta": "This project has no local folder linked on disk.",
+        "preview_titulo": "Shared Context Preview:",
+        "lbl_caminho_proj": "Disk Path:",
+        "lbl_conversas_proj": "Total Conversations:",
+        "lbl_projeto_topo": "Project:",
+        "btn_sync_universal": "Sync All Projects & Chats (Antigravity <-> Claude <-> ChatGPT)",
+        "btn_sync_este_proj": "Sync This Project's Chats with Claude & ChatGPT",
+        "sucesso_sync": "Universal sync completed!\n\n- Antigravity -> Claude: {p_ag} projects, {c_ag} chats.\n- Claude -> Antigravity: {p_cl} projects, {c_cl} chats.\n- ChatGPT / Codex: {p_gpt} projects, {c_gpt} chats.\n\nAll AI models now share all projects and conversations!",
+        "sucesso_sync_proj": "Chats for project '{nome}' synced successfully between Antigravity, Claude, and ChatGPT!"
     },
     "es": {
-        "title": "Administrador de Perfiles Antigravity",
+        "title": "MultiGravity - Universal AI Hub & Profile Manager",
+        "tab_perfis": "Perfiles Antigravity",
+        "tab_projetos": "Central de Proyectos (Hub)",
+        "tab_ponte": "Puente de Memoria y Sincronizador",
         "frame_create": "Crear Nuevo Perfil",
         "lbl_nome": "Nombre:",
         "btn_add": "Agregar",
         "chk_copiar": "Compartir todos los proyectos en este nuevo perfil",
-        "frame_perfis": "Perfiles",
+        "frame_perfis": "Perfiles Registrados",
         "btn_abrir": "Abrir Perfil Seleccionado",
         "btn_proj": "Compartir Proyectos del Perfil",
         "btn_atalho": "Crear Acceso Directo en el Escritorio",
         "btn_del": "Eliminar Perfil",
         "lbl_idioma": "Idioma:",
         "projetos_sufixo": "proyectos",
+        "conversas_sufixo": "conversaciones",
         "aviso_selecao": "¡Selecciona un perfil de la lista!",
+        "aviso_selecao_proj": "¡Selecciona un proyecto de la lista!",
         "aviso_nome": "¡Introduce un nombre para el perfil!",
         "aviso_nome_invalido": "¡Nombre de perfil no valido! No use caracteres especiales (< > : \" / \\ | ? *) ni espacios o puntos finales.",
         "erro_existe": "¡Ya existe un perfil con ese nombre!",
@@ -152,7 +215,7 @@ TEXTOS = {
         "confirma_del": "¿Estas seguro de que deseas eliminar el perfil '{nome}' y todos sus datos?",
         "top_titulo": "Compartir Proyectos - {nome}",
         "top_aviso": "Selecciona los proyectos visibles para: {nome}",
-        "filtrar": "Filtrar:",
+        "filtrar": "Filtrar Proyectos:",
         "marcar_todos": "Marcar Todos",
         "desmarcar_todos": "Desmarcar Todos",
         "btn_salvar": "Guardar Cambios",
@@ -163,22 +226,51 @@ TEXTOS = {
         "t_erro": "Error",
         "t_sucesso": "Exito",
         "t_confirma": "Confirmar",
-        "t_info": "Info"
+        "t_info": "Info",
+        "lbl_acoes_ia": "Acciones para el Proyecto Seleccionado:",
+        "btn_abrir_ag": "Abrir en Antigravity",
+        "btn_abrir_claude": "Abrir en Claude Desktop",
+        "btn_abrir_chatgpt": "Abrir en ChatGPT Desktop",
+        "btn_abrir_pasta": "Abrir Carpeta en el Explorador",
+        "lbl_perfil_alvo": "Perfil:",
+        "lbl_status_detect": "Estado de las IAs:",
+        "status_instalado": "Instalado",
+        "status_nao_encontrado": "No Detectado",
+        "lbl_selecione_proj": "Seleccione un proyecto en la lista superior.",
+        "btn_copiar_ctx": "Copiar Contexto al Portapapeles (Prompt Listo)",
+        "btn_exportar_ctx": "Guardar .ai-context.md en Carpeta del Proyecto",
+        "btn_atualizar_ctx": "Actualizar Vista Previa",
+        "sucesso_copiado": "¡Contexto copiado al portapapeles!\nPresione Ctrl+V en Claude o ChatGPT.",
+        "sucesso_exportado": "Archivo .ai-context.md creado con exito en:\n{caminho}",
+        "erro_sem_pasta": "Este proyecto no tiene carpeta fisica vinculada en el disco.",
+        "preview_titulo": "Vista Previa del Contexto Compartido:",
+        "lbl_caminho_proj": "Ruta en Disco:",
+        "lbl_conversas_proj": "Total de Conversaciones:",
+        "lbl_projeto_topo": "Proyecto:",
+        "btn_sync_universal": "Sincronizar Todos los Proyectos y Chats (Antigravity <-> Claude <-> ChatGPT)",
+        "btn_sync_este_proj": "Sincronizar Chats de Este Proyecto con Claude y ChatGPT",
+        "sucesso_sync": "¡Sincronizacion universal completada!\n\n- Antigravity -> Claude: {p_ag} proyectos, {c_ag} chats.\n- Claude -> Antigravity: {p_cl} proyectos, {c_cl} chats.\n- ChatGPT / Codex: {p_gpt} proyectos, {c_gpt} chats.\n\n¡Todos los modelos ahora comparten todos los proyectos y chats!",
+        "sucesso_sync_proj": "¡Chats del proyecto '{nome}' sincronizados con exito entre Antigravity, Claude y ChatGPT!"
     },
     "ru": {
-        "title": "Менеджер профилей Antigravity",
+        "title": "MultiGravity - Universal AI Hub & Profile Manager",
+        "tab_perfis": "Профили Antigravity",
+        "tab_projetos": "Центр проектов (Hub)",
+        "tab_ponte": "Мост памяти и синхронизация",
         "frame_create": "Создать новый профиль",
         "lbl_nome": "Имя:",
         "btn_add": "Добавить",
         "chk_copiar": "Поделиться всеми проектами в новом профиле",
-        "frame_perfis": "Профили",
+        "frame_perfis": "Зарегистрированные профили",
         "btn_abrir": "Открыть выбранный профиль",
         "btn_proj": "Управление проектами профиля",
         "btn_atalho": "Создать ярлык на рабочем столе",
         "btn_del": "Удалить профиль",
         "lbl_idioma": "Язык:",
         "projetos_sufixo": "проектов",
+        "conversas_sufixo": "бесед",
         "aviso_selecao": "Выберите профиль из списка!",
+        "aviso_selecao_proj": "Выберите проект из списка!",
         "aviso_nome": "Введите имя для профиля!",
         "aviso_nome_invalido": "Недопустимое имя профиля! Не используйте специальные символы (< > : \" / \\ | ? *) или пробелы/точки в конце.",
         "erro_existe": "Профиль с таким именем уже существует!",
@@ -187,7 +279,7 @@ TEXTOS = {
         "confirma_del": "Вы уверены, что хотите удалить профиль '{nome}' и все его данные?",
         "top_titulo": "Управление проектами - {nome}",
         "top_aviso": "Выберите проекты, доступные для: {nome}",
-        "filtrar": "Фильтр:",
+        "filtrar": "Фильтр проектов:",
         "marcar_todos": "Выбрать все",
         "desmarcar_todos": "Снять выделение",
         "btn_salvar": "Сохранить изменения",
@@ -198,7 +290,31 @@ TEXTOS = {
         "t_erro": "Ошибка",
         "t_sucesso": "Успех",
         "t_confirma": "Подтверждение",
-        "t_info": "Информация"
+        "t_info": "Информация",
+        "lbl_acoes_ia": "Действия для выбранного проекта:",
+        "btn_abrir_ag": "Открыть в Antigravity",
+        "btn_abrir_claude": "Открыть в Claude Desktop",
+        "btn_abrir_chatgpt": "Открыть в ChatGPT Desktop",
+        "btn_abrir_pasta": "Открыть папку в Проводнике",
+        "lbl_perfil_alvo": "Профиль:",
+        "lbl_status_detect": "Статус приложений ИИ:",
+        "status_instalado": "Установлено",
+        "status_nao_encontrado": "Не найдено",
+        "lbl_selecione_proj": "Выберите проект в списке выше.",
+        "btn_copiar_ctx": "Копировать контекст в буфер (готовый промпт)",
+        "btn_exportar_ctx": "Сохранить .ai-context.md в папке проекта",
+        "btn_atualizar_ctx": "Обновить предпросмотр",
+        "sucesso_copiado": "Контекст скопирован в буфер обмена!\nНажмите Ctrl+V в Claude или ChatGPT.",
+        "sucesso_exportado": "Файл .ai-context.md успешно создан:\n{caminho}",
+        "erro_sem_pasta": "У этого проекта нет привязанной папки на диске.",
+        "preview_titulo": "Предпросмотр общего контекста:",
+        "lbl_caminho_proj": "Путь на диске:",
+        "lbl_conversas_proj": "Всего бесед:",
+        "lbl_projeto_topo": "Проект:",
+        "btn_sync_universal": "Синхронизировать все проекты и чаты (Antigravity <-> Claude <-> ChatGPT)",
+        "btn_sync_este_proj": "Синхронизировать чаты этого проекта с Claude и ChatGPT",
+        "sucesso_sync": "Универсальная синхронизация завершена!\n\n- Antigravity -> Claude: {p_ag} проектов, {c_ag} чатов.\n- Claude -> Antigravity: {p_cl} проектов, {c_cl} чатов.\n- ChatGPT / Codex: {p_gpt} проектов, {c_gpt} чатов.\n\nВсе модели теперь имеют доступ ко всем проектам и чатам!",
+        "sucesso_sync_proj": "Чаты проекта '{nome}' успешно синхронизированы между Antigravity, Claude и ChatGPT!"
     }
 }
 
@@ -243,44 +359,6 @@ def t(chave, **kwargs):
         return val.format(**kwargs)
     return val
 
-def obter_todos_projetos():
-    projetos = {}
-    pastas = [MASTER_DIR]
-    if os.path.exists(PROFILES_DIR):
-        for p in os.listdir(PROFILES_DIR):
-            d = os.path.join(PROFILES_DIR, p, "home", ".gemini", "config", "projects")
-            if os.path.exists(d):
-                pastas.append(d)
-    for d in pastas:
-        if not os.path.exists(d):
-            continue
-        for f in os.listdir(d):
-            if f.endswith(".json") and f != "outside-of-project.json":
-                caminho = os.path.join(d, f)
-                try:
-                    with open(caminho, "r", encoding="utf-8") as fp:
-                        dados = json.load(fp)
-                        nome = dados.get("name", f[:-5])
-                        pid = dados.get("id", f[:-5])
-                        if pid not in projetos:
-                            projetos[pid] = {"id": pid, "name": nome, "filename": f, "src": caminho}
-                except:
-                    pass
-    return projetos
-
-def carregar_lista():
-    lista.delete(0, tk.END)
-    if os.path.exists(PROFILES_DIR):
-        for pasta in sorted(os.listdir(PROFILES_DIR)):
-            caminho = os.path.join(PROFILES_DIR, pasta)
-            if os.path.isdir(caminho):
-                d_proj = os.path.join(caminho, "home", ".gemini", "config", "projects")
-                qtd = 0
-                if os.path.exists(d_proj):
-                    qtd = len([f for f in os.listdir(d_proj) if f.endswith(".json") and f != "outside-of-project.json"])
-                sufixo = t("projetos_sufixo")
-                lista.insert(tk.END, f"{pasta}  ({qtd} {sufixo})")
-
 def encode_claude_project_dir(path):
     p = os.path.normpath(path)
     if len(p) > 1 and p[1] == ":":
@@ -297,10 +375,8 @@ def clean_user_text(text):
     text = re.sub(r'<CONTEXT_SUMMARY>[\s\S]*?</CONTEXT_SUMMARY>', '', text)
     return text.strip()
 
-
 def garantir_link_antigravity(pasta_perfil):
-    master_ag = os.path.join(os.path.expanduser("~"), ".gemini", "antigravity")
-    if not os.path.exists(master_ag):
+    if not os.path.exists(MASTER_AG):
         return
     ag_dir = os.path.join(pasta_perfil, "home", ".gemini", "antigravity")
     gemini_dir = os.path.join(pasta_perfil, "home", ".gemini")
@@ -316,18 +392,18 @@ def garantir_link_antigravity(pasta_perfil):
         except:
             pass
     try:
-        subprocess.run(["cmd", "/c", "mklink", "/J", ag_dir, master_ag], capture_output=True)
+        subprocess.run(["cmd", "/c", "mklink", "/J", ag_dir, MASTER_AG], capture_output=True)
     except:
         pass
     if not os.path.exists(ag_dir):
         try:
             os.makedirs(ag_dir, exist_ok=True)
             for f in ["conversation_summaries.db", "antigravity_state.pbtxt"]:
-                src = os.path.join(master_ag, f)
+                src = os.path.join(MASTER_AG, f)
                 if os.path.exists(src):
                     shutil.copy2(src, os.path.join(ag_dir, f))
             for d in ["conversations", "brain"]:
-                src = os.path.join(master_ag, d)
+                src = os.path.join(MASTER_AG, d)
                 dst = os.path.join(ag_dir, d)
                 if os.path.exists(src) and not os.path.exists(dst):
                     shutil.copytree(src, dst)
@@ -337,270 +413,92 @@ def garantir_link_antigravity(pasta_perfil):
 def validar_nome_perfil(nome):
     if not nome:
         return False
-    # Caracteres invalidos para pastas no Windows: \ / : * ? " < > |
     if re.search(r'[<>:"/\\|?*]', nome):
         return False
     if nome.endswith(".") or nome.endswith(" "):
         return False
     return True
 
-def criar_perfil():
-    nome = entrada_nome.get().strip()
-    if not nome:
-        messagebox.showwarning(t("t_aviso"), t("aviso_nome"))
-        return
-    if not validar_nome_perfil(nome):
-        messagebox.showwarning(t("t_aviso"), t("aviso_nome_invalido"))
-        return
-    pasta_perfil = os.path.join(PROFILES_DIR, nome)
-    if os.path.exists(pasta_perfil):
-        messagebox.showerror(t("t_erro"), t("erro_existe"))
-        return
-    pasta_proj = os.path.join(pasta_perfil, "home", ".gemini", "config", "projects")
-    os.makedirs(os.path.join(pasta_perfil, "data"), exist_ok=True)
-    os.makedirs(pasta_proj, exist_ok=True)
-    garantir_link_antigravity(pasta_perfil)
-    
-    with open(os.path.join(pasta_proj, "outside-of-project.json"), "w", encoding="utf-8") as fp:
-        json.dump({"id": "outside-of-project", "name": "Outside of Project"}, fp)
+def obter_nomes_perfis():
+    res = []
+    if os.path.exists(PROFILES_DIR):
+        for pasta in sorted(os.listdir(PROFILES_DIR)):
+            c = os.path.join(PROFILES_DIR, pasta)
+            if os.path.isdir(c):
+                res.append(pasta)
+    return res
 
-    if var_copiar_tudo.get():
-        todos = obter_todos_projetos()
-        for p in todos.values():
-            try:
-                shutil.copy2(p["src"], os.path.join(pasta_proj, p["filename"]))
-            except:
-                pass
+def obter_todos_projetos():
+    projetos = {}
+    pastas = [MASTER_DIR]
+    if os.path.exists(PROFILES_DIR):
+        for p in os.listdir(PROFILES_DIR):
+            d = os.path.join(PROFILES_DIR, p, "home", ".gemini", "config", "projects")
+            if os.path.exists(d):
+                pastas.append(d)
+    conn = None
+    if os.path.exists(DB_PATH):
+        try:
+            conn = sqlite3.connect(DB_PATH)
+        except:
+            conn = None
 
-    entrada_nome.delete(0, tk.END)
-    carregar_lista()
-    messagebox.showinfo(t("t_sucesso"), t("sucesso_criado", nome=nome))
+    for d in pastas:
+        if not os.path.exists(d):
+            continue
+        for f in os.listdir(d):
+            if f.endswith(".json") and f != "outside-of-project.json":
+                caminho = os.path.join(d, f)
+                try:
+                    with open(caminho, "r", encoding="utf-8") as fp:
+                        dados = json.load(fp)
+                        nome = dados.get("name", f[:-5])
+                        pid = dados.get("id", f[:-5])
+                        folder = ""
+                        res = dados.get("projectResources", {}).get("resources", [])
+                        raw_uri = ""
+                        if res:
+                            item = res[0]
+                            if "folderUri" in item:
+                                raw_uri = item["folderUri"]
+                            elif "gitFolder" in item:
+                                raw_uri = item["gitFolder"].get("folderUri", "")
+                            elif "workspaceUri" in item:
+                                raw_uri = item["workspaceUri"]
+                        if raw_uri:
+                            folder = urllib.parse.unquote(raw_uri.replace("file:///", "").replace("file://", ""))
+                            folder = folder.replace("/", "\\")
+                            if len(folder) > 1 and folder[1] == ":":
+                                pass
+                            elif len(folder) > 2 and folder[2] == ":":
+                                folder = folder[1:]
+                            folder = os.path.normpath(folder)
 
-def abrir_perfil():
-    selecao = lista.curselection()
-    if not selecao:
-        messagebox.showwarning(t("t_aviso"), t("aviso_selecao"))
-        return
-    item = lista.get(selecao[0])
-    nome = item.split("  (")[0]
-    pasta_perfil = os.path.join(PROFILES_DIR, nome)
-    data_dir = os.path.join(pasta_perfil, "data")
-    home_dir = os.path.join(pasta_perfil, "home")
-    pasta_proj = os.path.join(home_dir, ".gemini", "config", "projects")
-    os.makedirs(data_dir, exist_ok=True)
-    os.makedirs(pasta_proj, exist_ok=True)
-    garantir_link_antigravity(pasta_perfil)
-    
-    outside_file = os.path.join(pasta_proj, "outside-of-project.json")
-    if not os.path.exists(outside_file):
-        with open(outside_file, "w", encoding="utf-8") as fp:
-            json.dump({"id": "outside-of-project", "name": "Outside of Project"}, fp)
+                        chat_count = 0
+                        if conn:
+                            try:
+                                r = conn.execute("SELECT COUNT(*) FROM conversation_summaries WHERE project_id = ?", (pid,)).fetchone()
+                                chat_count = r[0] if r else 0
+                            except:
+                                pass
 
-    env = os.environ.copy()
-    env["USERPROFILE"] = home_dir
-    env["SSH_CONNECTION"] = "127.0.0.1 1234 127.0.0.1 22"
-    env["SSH_CLIENT"] = "127.0.0.1 1234 22"
-    cmd = [EXE_PATH, f"--user-data-dir={data_dir}"]
-    subprocess.Popen(cmd, env=env, cwd=os.path.dirname(EXE_PATH), creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP)
-
-def criar_atalho():
-    selecao = lista.curselection()
-    if not selecao:
-        messagebox.showwarning(t("t_aviso"), t("aviso_selecao"))
-        return
-    item = lista.get(selecao[0])
-    nome = item.split("  (")[0]
-    pasta_perfil = os.path.join(PROFILES_DIR, nome)
-    data_dir = os.path.join(pasta_perfil, "data")
-    home_dir = os.path.join(pasta_perfil, "home")
-    garantir_link_antigravity(pasta_perfil)
-    runner_script = os.path.join(pasta_perfil, "launch.vbs")
-    vbs = f'''Set WshShell = CreateObject("WScript.Shell")
-Set objEnv = WshShell.Environment("PROCESS")
-objEnv("USERPROFILE") = "{home_dir}"
-objEnv("SSH_CONNECTION") = "127.0.0.1 1234 127.0.0.1 22"
-objEnv("SSH_CLIENT") = "127.0.0.1 1234 22"
-WshShell.Run """{EXE_PATH}"" --user-data-dir=""{data_dir}""", 1, False
-'''
-    with open(runner_script, "w", encoding="utf-8") as f:
-        f.write(vbs)
-    desktop = os.path.join(os.path.expanduser("~"), "Desktop")
-    shortcut_path = os.path.join(desktop, f"Antigravity - {nome}.lnk")
-    ps = f'''
-$sh = New-Object -ComObject WScript.Shell
-$s = $sh.CreateShortcut('{shortcut_path}')
-$s.TargetPath = 'wscript.exe'
-$s.Arguments = '"{runner_script}"'
-$s.WorkingDirectory = '{os.path.dirname(EXE_PATH)}'
-$s.IconLocation = '{EXE_PATH},0'
-$s.Description = 'Antigravity - {nome}'
-$s.Save()
-'''
-    subprocess.run(["powershell", "-NoProfile", "-Command", ps], check=True)
-    messagebox.showinfo(t("t_sucesso"), t("sucesso_atalho", nome=nome))
-
-def excluir_perfil():
-    selecao = lista.curselection()
-    if not selecao:
-        messagebox.showwarning(t("t_aviso"), t("aviso_selecao"))
-        return
-    item = lista.get(selecao[0])
-    nome = item.split("  (")[0]
-    if messagebox.askyesno(t("t_confirma"), t("confirma_del", nome=nome)):
-        shutil.rmtree(os.path.join(PROFILES_DIR, nome), ignore_errors=True)
-        carregar_lista()
-
-def gerenciar_projetos():
-    selecao = lista.curselection()
-    if not selecao:
-        messagebox.showwarning(t("t_aviso"), t("aviso_selecao"))
-        return
-    item = lista.get(selecao[0])
-    nome = item.split("  (")[0]
-    pasta_perfil = os.path.join(PROFILES_DIR, nome)
-    pasta_proj_perfil = os.path.join(pasta_perfil, "home", ".gemini", "config", "projects")
-    os.makedirs(pasta_proj_perfil, exist_ok=True)
-
-    todos = obter_todos_projetos()
-    if not todos:
-        messagebox.showinfo(t("t_info"), t("info_sem_proj"))
-        return
-
-    arquivos_atuais = set(os.listdir(pasta_proj_perfil)) if os.path.exists(pasta_proj_perfil) else set()
-
-    top = tk.Toplevel(janela)
-    top.title(t("top_titulo", nome=nome))
-    top.geometry("470x520")
-    top.transient(janela)
-
-    frame_topo_top = tk.Frame(top, padx=10, pady=5)
-    frame_topo_top.pack(fill="x")
-
-    lbl_aviso = tk.Label(frame_topo_top, text=t("top_aviso", nome=nome), font=("Arial", 9, "bold"))
-    lbl_aviso.pack(anchor="w", pady=(0, 5))
-
-    frame_busca = tk.Frame(frame_topo_top)
-    frame_busca.pack(fill="x", pady=2)
-    tk.Label(frame_busca, text=t("filtrar")).pack(side="left")
-    entrada_filtro = tk.Entry(frame_busca)
-    entrada_filtro.pack(side="left", fill="x", expand=True, padx=5)
-
-    frame_acoes = tk.Frame(frame_topo_top)
-    frame_acoes.pack(fill="x", pady=4)
-
-    def marcar_todos():
-        for pid in vars_map:
-            vars_map[pid].set(True)
-
-    def desmarcar_todos():
-        for pid in vars_map:
-            vars_map[pid].set(False)
-
-    btn_marcar = tk.Button(frame_acoes, text=t("marcar_todos"), command=marcar_todos, width=15)
-    btn_marcar.pack(side="left", padx=2)
-
-    btn_desmarcar = tk.Button(frame_acoes, text=t("desmarcar_todos"), command=desmarcar_todos, width=15)
-    btn_desmarcar.pack(side="left", padx=2)
-
-    frame_conteudo = tk.Frame(top, padx=10, pady=5)
-    frame_conteudo.pack(fill="both", expand=True)
-
-    canvas = tk.Canvas(frame_conteudo, borderwidth=1, relief="sunken")
-    scroll = tk.Scrollbar(frame_conteudo, orient="vertical", command=canvas.yview)
-    frame_scroll = tk.Frame(canvas)
-
-    frame_scroll.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
-    canvas.create_window((0, 0), window=frame_scroll, anchor="nw")
-    canvas.configure(yscrollcommand=scroll.set)
-
-    canvas.pack(side="left", fill="both", expand=True)
-    scroll.pack(side="right", fill="y")
-
-    def rolar(evento):
-        canvas.yview_scroll(int(-1 * (evento.delta / 120)), "units")
-    canvas.bind_all("<MouseWheel>", rolar)
-
-    vars_map = {}
-    widgets_map = {}
-
-    projetos_ordenados = sorted(todos.values(), key=lambda x: x["name"].lower())
-
-    for p in projetos_ordenados:
-        pid = p["id"]
-        esta_presente = p["filename"] in arquivos_atuais
-        var = tk.BooleanVar(value=esta_presente)
-        vars_map[pid] = var
-        cb = tk.Checkbutton(frame_scroll, text=p["name"], variable=var, font=("Arial", 9))
-        cb.pack(anchor="w", padx=4, pady=2)
-        widgets_map[pid] = (cb, p["name"].lower())
-
-    def filtrar(evento=None):
-        texto = entrada_filtro.get().strip().lower()
-        for pid, (cb, nome_p) in widgets_map.items():
-            if texto in nome_p:
-                cb.pack(anchor="w", padx=4, pady=2)
-            else:
-                cb.pack_forget()
-
-    entrada_filtro.bind("<KeyRelease>", filtrar)
-
-    frame_rodape = tk.Frame(top, padx=10, pady=10)
-    frame_rodape.pack(fill="x")
-
-    def salvar():
-        os.makedirs(pasta_proj_perfil, exist_ok=True)
-        outside_f = os.path.join(pasta_proj_perfil, "outside-of-project.json")
-        if not os.path.exists(outside_f):
-            with open(outside_f, "w", encoding="utf-8") as fp:
-                json.dump({"id": "outside-of-project", "name": "Outside of Project"}, fp)
-
-        for pid, var in vars_map.items():
-            p_info = todos[pid]
-            destino = os.path.join(pasta_proj_perfil, p_info["filename"])
-            if var.get():
-                if not os.path.exists(destino):
-                    try:
-                        shutil.copy2(p_info["src"], destino)
-                    except:
-                        pass
-            else:
-                if os.path.exists(destino):
-                    try:
-                        os.remove(destino)
-                    except:
-                        pass
-        canvas.unbind_all("<MouseWheel>")
-        top.destroy()
-        carregar_lista()
-        messagebox.showinfo(t("t_sucesso"), t("sucesso_proj", nome=nome))
-
-    btn_salvar = tk.Button(frame_rodape, text=t("btn_salvar"), command=salvar, width=18, bg="#d9d9d9", height=2)
-    btn_salvar.pack(side="left", padx=5)
-
-    btn_cancelar = tk.Button(frame_rodape, text=t("btn_cancelar"), command=lambda: (canvas.unbind_all("<MouseWheel>"), top.destroy()), width=12, height=2)
-    btn_cancelar.pack(side="right", padx=5)
-
-def atualizar_textos_interface():
-    janela.title(t("title"))
-    frame_topo.config(text=t("frame_create"))
-    lbl_nome.config(text=t("lbl_nome"))
-    btn_add.config(text=t("btn_add"))
-    chk_copiar.config(text=t("chk_copiar"))
-    frame_meio.config(text=t("frame_perfis"))
-    btn_abrir.config(text=t("btn_abrir"))
-    btn_proj.config(text=t("btn_proj"))
-    btn_atalho.config(text=t("btn_atalho"))
-    btn_del.config(text=t("btn_del"))
-    lbl_idioma.config(text=t("lbl_idioma"))
-    carregar_lista()
-
-def mudar_idioma(escolha):
-    global idioma_atual
-    sigla = IDIOMAS_NOMES.get(escolha, "pt")
-    idioma_atual = sigla
-    salvar_idioma(sigla)
-    atualizar_textos_interface()
-
+                        if pid not in projetos:
+                            projetos[pid] = {
+                                "id": pid,
+                                "name": nome,
+                                "filename": f,
+                                "src": caminho,
+                                "path": folder,
+                                "chats": chat_count
+                            }
+                except:
+                    pass
+    if conn:
+        try:
+            conn.close()
+        except:
+            pass
+    return projetos
 
 def sincronizar_antigravity_para_claude(projeto_especifico=None):
     if not os.path.exists(MASTER_DIR):
@@ -758,7 +656,6 @@ def sincronizar_antigravity_para_claude(projeto_especifico=None):
         pass
 
     return {"projetos": projetos_sincronizados, "conversas": conversas_sincronizadas}
-
 
 def sincronizar_claude_para_antigravity(projeto_especifico=None):
     if not os.path.exists(CLAUDE_JSON_PATH):
@@ -922,7 +819,6 @@ def sincronizar_claude_para_antigravity(projeto_especifico=None):
         conn.close()
 
     return {"projetos": novos_projetos, "conversas": conversas_convertidas}
-
 
 def sincronizar_todos_para_chatgpt():
     if not os.path.exists(CODEX_DIR):
@@ -1279,7 +1175,6 @@ def sincronizar_todos_para_chatgpt():
 
     return {"projects": novos_projetos, "threads": novas_threads}
 
-
 def executar_sincronizacao_universal():
     res1 = sincronizar_antigravity_para_claude()
     res2 = sincronizar_claude_para_antigravity()
@@ -1398,7 +1293,6 @@ def gerar_contexto_markdown(project_id):
     linhas.append("Voce esta trabalhando neste mesmo projeto. Utilize o historico de tarefas e contexto acima para manter coerencia com o trabalho ja realizado no Antigravity.")
     return "\n".join(linhas)
 
-
 def executar_antigravity(nome_perfil, pasta_alvo=None):
     if not nome_perfil:
         perfis = obter_nomes_perfis()
@@ -1474,9 +1368,8 @@ def abrir_pasta_explorer(caminho):
     else:
         messagebox.showwarning(t("t_aviso"), t("erro_sem_pasta"))
 
-
 janela = tk.Tk()
-janela.geometry("500x510")
+janela.geometry("650x670")
 janela.resizable(False, False)
 
 ico_caminho = os.path.join(BASE_DIR, "icon.ico")
@@ -1491,8 +1384,27 @@ elif os.path.exists(EXE_PATH):
     except:
         pass
 
-frame_idioma = tk.Frame(janela, padx=10, pady=5)
-frame_idioma.pack(fill="x")
+frame_cabecalho = tk.Frame(janela, padx=10, pady=6)
+frame_cabecalho.pack(fill="x")
+
+frame_status_ias = tk.Frame(frame_cabecalho)
+frame_status_ias.pack(side="left")
+
+tem_ag = os.path.exists(EXE_PATH)
+tem_claude = is_claude_installed()
+tem_chatgpt = is_chatgpt_installed()
+
+lbl_badge_ag = tk.Label(frame_status_ias, text=f"Antigravity: {'OK' if tem_ag else '-'}", font=("Arial", 8, "bold"), fg="#1e7e34" if tem_ag else "#6c757d")
+lbl_badge_ag.pack(side="left", padx=(0, 6))
+
+lbl_badge_claude = tk.Label(frame_status_ias, text=f"Claude: {'OK' if tem_claude else '-'}", font=("Arial", 8, "bold"), fg="#1e7e34" if tem_claude else "#6c757d")
+lbl_badge_claude.pack(side="left", padx=6)
+
+lbl_badge_chatgpt = tk.Label(frame_status_ias, text=f"ChatGPT: {'OK' if tem_chatgpt else '-'}", font=("Arial", 8, "bold"), fg="#1e7e34" if tem_chatgpt else "#6c757d")
+lbl_badge_chatgpt.pack(side="left", padx=6)
+
+frame_idioma = tk.Frame(frame_cabecalho)
+frame_idioma.pack(side="right")
 
 lbl_idioma = tk.Label(frame_idioma, text=t("lbl_idioma"), font=("Arial", 9))
 lbl_idioma.pack(side="left")
@@ -1501,50 +1413,595 @@ var_idioma = tk.StringVar(janela)
 nome_inverso = {v: k for k, v in IDIOMAS_NOMES.items()}
 var_idioma.set(nome_inverso.get(idioma_atual, "Português"))
 
+notebook = ttk.Notebook(janela)
+notebook.pack(fill="both", expand=True, padx=8, pady=4)
+
+tab_perfis = ttk.Frame(notebook)
+tab_projetos = ttk.Frame(notebook)
+tab_ponte = ttk.Frame(notebook)
+
+notebook.add(tab_perfis, text=t("tab_perfis"))
+notebook.add(tab_projetos, text=t("tab_projetos"))
+notebook.add(tab_ponte, text=t("tab_ponte"))
+
+frame_topo_perfis = tk.LabelFrame(tab_perfis, text=t("frame_create"), padx=10, pady=8)
+frame_topo_perfis.pack(padx=10, pady=5, fill="x")
+
+lbl_nome = tk.Label(frame_topo_perfis, text=t("lbl_nome"))
+lbl_nome.grid(row=0, column=0, sticky="w")
+
+entrada_nome = tk.Entry(frame_topo_perfis, width=32)
+entrada_nome.grid(row=0, column=1, padx=5)
+
+btn_add = tk.Button(frame_topo_perfis, text=t("btn_add"), width=12)
+btn_add.grid(row=0, column=2, padx=5)
+
+var_copiar_tudo = tk.BooleanVar(value=False)
+chk_copiar = tk.Checkbutton(frame_topo_perfis, text=t("chk_copiar"), variable=var_copiar_tudo)
+chk_copiar.grid(row=1, column=0, columnspan=3, sticky="w", pady=(4, 0))
+
+frame_meio_perfis = tk.LabelFrame(tab_perfis, text=t("frame_perfis"), padx=10, pady=8)
+frame_meio_perfis.pack(padx=10, pady=5, fill="both", expand=True)
+
+scroll_perfis = tk.Scrollbar(frame_meio_perfis)
+scroll_perfis.pack(side="right", fill="y")
+
+lista_perfis = tk.Listbox(frame_meio_perfis, yscrollcommand=scroll_perfis.set, font=("Arial", 10), height=7)
+lista_perfis.pack(side="left", fill="both", expand=True)
+scroll_perfis.config(command=lista_perfis.yview)
+
+frame_botoes_perfis = tk.Frame(tab_perfis, padx=10, pady=5)
+frame_botoes_perfis.pack(fill="x")
+
+btn_abrir_perfil = tk.Button(frame_botoes_perfis, text=t("btn_abrir"), height=2, bg="#d9d9d9")
+btn_abrir_perfil.pack(fill="x", pady=2)
+
+btn_proj_perfil = tk.Button(frame_botoes_perfis, text=t("btn_proj"))
+btn_proj_perfil.pack(fill="x", pady=2)
+
+btn_atalho_perfil = tk.Button(frame_botoes_perfis, text=t("btn_atalho"))
+btn_atalho_perfil.pack(fill="x", pady=2)
+
+btn_del_perfil = tk.Button(frame_botoes_perfis, text=t("btn_del"))
+btn_del_perfil.pack(fill="x", pady=2)
+
+frame_topo_hub = tk.Frame(tab_projetos, padx=10, pady=4)
+frame_topo_hub.pack(fill="x")
+
+btn_sync_all_hub = tk.Button(frame_topo_hub, text=t("btn_sync_universal"), bg="#e2e8f0", font=("Arial", 9, "bold"), height=2)
+btn_sync_all_hub.pack(fill="x", pady=(0, 4))
+
+frame_busca_proj = tk.Frame(tab_projetos, padx=10, pady=2)
+frame_busca_proj.pack(fill="x")
+
+lbl_filtrar_proj = tk.Label(frame_busca_proj, text=t("filtrar"), font=("Arial", 9))
+lbl_filtrar_proj.pack(side="left")
+
+entrada_filtro_proj = tk.Entry(frame_busca_proj)
+entrada_filtro_proj.pack(side="left", fill="x", expand=True, padx=6)
+
+frame_lista_proj = tk.Frame(tab_projetos, padx=10, pady=2)
+frame_lista_proj.pack(fill="both", expand=True)
+
+scroll_proj = tk.Scrollbar(frame_lista_proj)
+scroll_proj.pack(side="right", fill="y")
+
+lista_projetos = tk.Listbox(frame_lista_proj, yscrollcommand=scroll_proj.set, font=("Arial", 9), height=8)
+lista_projetos.pack(side="left", fill="both", expand=True)
+scroll_proj.config(command=lista_projetos.yview)
+
+frame_detalhe_proj = tk.LabelFrame(tab_projetos, text=t("lbl_acoes_ia"), padx=10, pady=4)
+frame_detalhe_proj.pack(padx=10, pady=4, fill="x")
+
+lbl_info_proj_nome = tk.Label(frame_detalhe_proj, text=t("lbl_selecione_proj"), font=("Arial", 9, "bold"), anchor="w")
+lbl_info_proj_nome.pack(fill="x")
+
+lbl_info_proj_path = tk.Label(frame_detalhe_proj, text="", font=("Arial", 8), fg="#555555", anchor="w")
+lbl_info_proj_path.pack(fill="x", pady=(1, 2))
+
+frame_linha_ag = tk.Frame(frame_detalhe_proj)
+frame_linha_ag.pack(fill="x", pady=2)
+
+lbl_perfil_escolha = tk.Label(frame_linha_ag, text=t("lbl_perfil_alvo"), font=("Arial", 9))
+lbl_perfil_escolha.pack(side="left")
+
+var_perfil_para_abrir = tk.StringVar(janela)
+opt_perfil_abrir = tk.OptionMenu(frame_linha_ag, var_perfil_para_abrir, "")
+opt_perfil_abrir.config(font=("Arial", 9), width=14)
+opt_perfil_abrir.pack(side="left", padx=4)
+
+btn_abrir_proj_ag = tk.Button(frame_linha_ag, text=t("btn_abrir_ag"), bg="#d9d9d9")
+btn_abrir_proj_ag.pack(side="left", fill="x", expand=True, padx=2)
+
+frame_linha_outras_ias = tk.Frame(frame_detalhe_proj)
+frame_linha_outras_ias.pack(fill="x", pady=2)
+
+btn_abrir_proj_claude = tk.Button(frame_linha_outras_ias, text=t("btn_abrir_claude"))
+btn_abrir_proj_claude.pack(side="left", fill="x", expand=True, padx=2)
+
+btn_abrir_proj_chatgpt = tk.Button(frame_linha_outras_ias, text=t("btn_abrir_chatgpt"))
+btn_abrir_proj_chatgpt.pack(side="left", fill="x", expand=True, padx=2)
+
+btn_abrir_proj_pasta = tk.Button(frame_linha_outras_ias, text=t("btn_abrir_pasta"))
+btn_abrir_proj_pasta.pack(side="left", fill="x", expand=True, padx=2)
+
+frame_linha_sync_proj = tk.Frame(frame_detalhe_proj)
+frame_linha_sync_proj.pack(fill="x", pady=2)
+
+btn_sync_proj_chats = tk.Button(frame_linha_sync_proj, text=t("btn_sync_este_proj"))
+btn_sync_proj_chats.pack(fill="x", expand=True, padx=2)
+
+frame_topo_ponte = tk.Frame(tab_ponte, padx=10, pady=4)
+frame_topo_ponte.pack(fill="x")
+
+lbl_projeto_ponte = tk.Label(frame_topo_ponte, text=t("lbl_projeto_topo"), font=("Arial", 9))
+lbl_projeto_ponte.pack(side="left")
+
+var_ponte_proj = tk.StringVar(janela)
+opt_ponte_proj = tk.OptionMenu(frame_topo_ponte, var_ponte_proj, "")
+opt_ponte_proj.config(font=("Arial", 9), width=24)
+opt_ponte_proj.pack(side="left", padx=5)
+
+btn_refresh_preview = tk.Button(frame_topo_ponte, text=t("btn_atualizar_ctx"))
+btn_refresh_preview.pack(side="left", padx=4)
+
+btn_sync_all_ponte = tk.Button(frame_topo_ponte, text="Sincronizar Tudo", bg="#e2e8f0")
+btn_sync_all_ponte.pack(side="right", padx=2)
+
+frame_txt_ponte = tk.Frame(tab_ponte, padx=10, pady=2)
+frame_txt_ponte.pack(fill="both", expand=True)
+
+scroll_txt_ponte = tk.Scrollbar(frame_txt_ponte)
+scroll_txt_ponte.pack(side="right", fill="y")
+
+txt_preview = tk.Text(frame_txt_ponte, wrap="word", yscrollcommand=scroll_txt_ponte.set, font=("Consolas", 9), height=13)
+txt_preview.pack(side="left", fill="both", expand=True)
+scroll_txt_ponte.config(command=txt_preview.yview)
+
+frame_botoes_ponte = tk.Frame(tab_ponte, padx=10, pady=6)
+frame_botoes_ponte.pack(fill="x")
+
+btn_copiar_prompt = tk.Button(frame_botoes_ponte, text=t("btn_copiar_ctx"), bg="#d9d9d9", height=2)
+btn_copiar_prompt.pack(side="left", fill="x", expand=True, padx=3)
+
+btn_exportar_md = tk.Button(frame_botoes_ponte, text=t("btn_exportar_ctx"), height=2)
+btn_exportar_md.pack(side="left", fill="x", expand=True, padx=3)
+
+PROJETOS_CACHE = {}
+PROJETOS_FILTRADOS = []
+PROJETO_SELECIONADO = None
+
+def carregar_lista_perfis():
+    lista_perfis.delete(0, tk.END)
+    perfis = obter_nomes_perfis()
+    for pasta in perfis:
+        caminho = os.path.join(PROFILES_DIR, pasta)
+        d_proj = os.path.join(caminho, "home", ".gemini", "config", "projects")
+        qtd = 0
+        if os.path.exists(d_proj):
+            qtd = len([f for f in os.listdir(d_proj) if f.endswith(".json") and f != "outside-of-project.json"])
+        sufixo = t("projetos_sufixo")
+        lista_perfis.insert(tk.END, f"{pasta}  ({qtd} {sufixo})")
+
+    menu_abrir = opt_perfil_abrir["menu"]
+    menu_abrir.delete(0, "end")
+    if perfis:
+        for p in perfis:
+            menu_abrir.add_command(label=p, command=lambda v=p: var_perfil_para_abrir.set(v))
+        if var_perfil_para_abrir.get() not in perfis:
+            var_perfil_para_abrir.set(perfis[0])
+    else:
+        var_perfil_para_abrir.set("")
+
+def carregar_lista_projetos():
+    global PROJETOS_CACHE, PROJETOS_FILTRADOS
+    PROJETOS_CACHE = obter_todos_projetos()
+    filtrar_projetos()
+    atualizar_menu_ponte()
+
+def filtrar_projetos(evento=None):
+    global PROJETOS_FILTRADOS
+    termo = entrada_filtro_proj.get().strip().lower()
+    lista_projetos.delete(0, tk.END)
+    PROJETOS_FILTRADOS = []
+
+    ordenados = sorted(PROJETOS_CACHE.values(), key=lambda x: x["name"].lower())
+    for p in ordenados:
+        if not termo or termo in p["name"].lower() or termo in p["path"].lower():
+            PROJETOS_FILTRADOS.append(p)
+            chats_txt = f"{p['chats']} {t('conversas_sufixo')}"
+            path_txt = f"[{p['path']}]" if p["path"] else "[Sem pasta]"
+            lista_projetos.insert(tk.END, f"{p['name']}  -  {chats_txt}  {path_txt}")
+
+def atualizar_menu_ponte():
+    menu_ponte = opt_ponte_proj["menu"]
+    menu_ponte.delete(0, "end")
+    ordenados = sorted(PROJETOS_CACHE.values(), key=lambda x: x["name"].lower())
+    if ordenados:
+        for p in ordenados:
+            label_nome = p["name"]
+            menu_ponte.add_command(label=label_nome, command=lambda v=label_nome: selecionar_projeto_ponte(v))
+        if not var_ponte_proj.get() or var_ponte_proj.get() not in [x["name"] for x in ordenados]:
+            var_ponte_proj.set(ordenados[0]["name"])
+            atualizar_preview_ponte()
+    else:
+        var_ponte_proj.set("")
+        txt_preview.delete("1.0", tk.END)
+
+def selecionar_projeto_ponte(nome_projeto):
+    var_ponte_proj.set(nome_projeto)
+    atualizar_preview_ponte()
+
+def atualizar_preview_ponte():
+    nome_projeto = var_ponte_proj.get().strip()
+    if not nome_projeto:
+        txt_preview.delete("1.0", tk.END)
+        return
+    txt = gerar_contexto_markdown(nome_projeto)
+    txt_preview.delete("1.0", tk.END)
+    txt_preview.insert("1.0", txt)
+
+def ao_selecionar_projeto(evento=None):
+    global PROJETO_SELECIONADO
+    selecao = lista_projetos.curselection()
+    if not selecao:
+        return
+    idx = selecao[0]
+    if idx < len(PROJETOS_FILTRADOS):
+        p = PROJETOS_FILTRADOS[idx]
+        PROJETO_SELECIONADO = p
+        lbl_info_proj_nome.config(text=f"{p['name']}  ({p['chats']} {t('conversas_sufixo')})")
+        lbl_info_proj_path.config(text=p["path"] if p["path"] else t("erro_sem_pasta"))
+        var_ponte_proj.set(p["name"])
+        atualizar_preview_ponte()
+
+lista_projetos.bind("<<ListboxSelect>>", ao_selecionar_projeto)
+entrada_filtro_proj.bind("<KeyRelease>", filtrar_projetos)
+
+def criar_perfil():
+    nome = entrada_nome.get().strip()
+    if not nome:
+        messagebox.showwarning(t("t_aviso"), t("aviso_nome"))
+        return
+    if not validar_nome_perfil(nome):
+        messagebox.showwarning(t("t_aviso"), t("aviso_nome_invalido"))
+        return
+    pasta_perfil = os.path.join(PROFILES_DIR, nome)
+    if os.path.exists(pasta_perfil):
+        messagebox.showerror(t("t_erro"), t("erro_existe"))
+        return
+    pasta_proj = os.path.join(pasta_perfil, "home", ".gemini", "config", "projects")
+    os.makedirs(os.path.join(pasta_perfil, "data"), exist_ok=True)
+    os.makedirs(pasta_proj, exist_ok=True)
+    garantir_link_antigravity(pasta_perfil)
+
+    with open(os.path.join(pasta_proj, "outside-of-project.json"), "w", encoding="utf-8") as fp:
+        json.dump({"id": "outside-of-project", "name": "Outside of Project"}, fp)
+
+    if var_copiar_tudo.get():
+        todos = obter_todos_projetos()
+        for p in todos.values():
+            try:
+                shutil.copy2(p["src"], os.path.join(pasta_proj, p["filename"]))
+            except:
+                pass
+
+    entrada_nome.delete(0, tk.END)
+    carregar_lista_perfis()
+    messagebox.showinfo(t("t_sucesso"), t("sucesso_criado", nome=nome))
+
+def abrir_perfil_selecionado():
+    selecao = lista_perfis.curselection()
+    if not selecao:
+        messagebox.showwarning(t("t_aviso"), t("aviso_selecao"))
+        return
+    item = lista_perfis.get(selecao[0])
+    nome = item.split("  (")[0]
+    executar_antigravity(nome)
+
+def criar_atalho():
+    selecao = lista_perfis.curselection()
+    if not selecao:
+        messagebox.showwarning(t("t_aviso"), t("aviso_selecao"))
+        return
+    item = lista_perfis.get(selecao[0])
+    nome = item.split("  (")[0]
+    pasta_perfil = os.path.join(PROFILES_DIR, nome)
+    data_dir = os.path.join(pasta_perfil, "data")
+    home_dir = os.path.join(pasta_perfil, "home")
+    garantir_link_antigravity(pasta_perfil)
+    runner_script = os.path.join(pasta_perfil, "launch.vbs")
+    vbs = f'''Set WshShell = CreateObject("WScript.Shell")
+Set objEnv = WshShell.Environment("PROCESS")
+objEnv("USERPROFILE") = "{home_dir}"
+objEnv("SSH_CONNECTION") = "127.0.0.1 1234 127.0.0.1 22"
+objEnv("SSH_CLIENT") = "127.0.0.1 1234 22"
+WshShell.Run """{EXE_PATH}"" --user-data-dir=""{data_dir}""", 1, False
+'''
+    with open(runner_script, "w", encoding="utf-8") as f:
+        f.write(vbs)
+    desktop = os.path.join(os.path.expanduser("~"), "Desktop")
+    shortcut_path = os.path.join(desktop, f"Antigravity - {nome}.lnk")
+    ps = f'''
+$sh = New-Object -ComObject WScript.Shell
+$s = $sh.CreateShortcut('{shortcut_path}')
+$s.TargetPath = 'wscript.exe'
+$s.Arguments = '"{runner_script}"'
+$s.WorkingDirectory = '{os.path.dirname(EXE_PATH)}'
+$s.IconLocation = '{EXE_PATH},0'
+$s.Description = 'Antigravity - {nome}'
+$s.Save()
+'''
+    subprocess.run(["powershell", "-NoProfile", "-Command", ps], check=True)
+    messagebox.showinfo(t("t_sucesso"), t("sucesso_atalho", nome=nome))
+
+def excluir_perfil():
+    selecao = lista_perfis.curselection()
+    if not selecao:
+        messagebox.showwarning(t("t_aviso"), t("aviso_selecao"))
+        return
+    item = lista_perfis.get(selecao[0])
+    nome = item.split("  (")[0]
+    if messagebox.askyesno(t("t_confirma"), t("confirma_del", nome=nome)):
+        shutil.rmtree(os.path.join(PROFILES_DIR, nome), ignore_errors=True)
+        carregar_lista_perfis()
+
+def gerenciar_projetos_perfil():
+    selecao = lista_perfis.curselection()
+    if not selecao:
+        messagebox.showwarning(t("t_aviso"), t("aviso_selecao"))
+        return
+    item = lista_perfis.get(selecao[0])
+    nome = item.split("  (")[0]
+    pasta_perfil = os.path.join(PROFILES_DIR, nome)
+    pasta_proj_perfil = os.path.join(pasta_perfil, "home", ".gemini", "config", "projects")
+    os.makedirs(pasta_proj_perfil, exist_ok=True)
+
+    todos = obter_todos_projetos()
+    if not todos:
+        messagebox.showinfo(t("t_info"), t("info_sem_proj"))
+        return
+
+    arquivos_atuais = set(os.listdir(pasta_proj_perfil)) if os.path.exists(pasta_proj_perfil) else set()
+
+    top = tk.Toplevel(janela)
+    top.title(t("top_titulo", nome=nome))
+    top.geometry("470x520")
+    top.transient(janela)
+
+    frame_topo_top = tk.Frame(top, padx=10, pady=5)
+    frame_topo_top.pack(fill="x")
+
+    lbl_aviso = tk.Label(frame_topo_top, text=t("top_aviso", nome=nome), font=("Arial", 9, "bold"))
+    lbl_aviso.pack(anchor="w", pady=(0, 5))
+
+    frame_busca = tk.Frame(frame_topo_top)
+    frame_busca.pack(fill="x", pady=2)
+    tk.Label(frame_busca, text=t("filtrar")).pack(side="left")
+    entrada_filtro = tk.Entry(frame_busca)
+    entrada_filtro.pack(side="left", fill="x", expand=True, padx=5)
+
+    frame_acoes = tk.Frame(frame_topo_top)
+    frame_acoes.pack(fill="x", pady=4)
+
+    def marcar_todos():
+        for pid in vars_map:
+            vars_map[pid].set(True)
+
+    def desmarcar_todos():
+        for pid in vars_map:
+            vars_map[pid].set(False)
+
+    btn_marcar = tk.Button(frame_acoes, text=t("marcar_todos"), command=marcar_todos, width=15)
+    btn_marcar.pack(side="left", padx=2)
+
+    btn_desmarcar = tk.Button(frame_acoes, text=t("desmarcar_todos"), command=desmarcar_todos, width=15)
+    btn_desmarcar.pack(side="left", padx=2)
+
+    frame_conteudo = tk.Frame(top, padx=10, pady=5)
+    frame_conteudo.pack(fill="both", expand=True)
+
+    canvas = tk.Canvas(frame_conteudo, borderwidth=1, relief="sunken")
+    scroll = tk.Scrollbar(frame_conteudo, orient="vertical", command=canvas.yview)
+    frame_scroll = tk.Frame(canvas)
+
+    frame_scroll.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+    canvas.create_window((0, 0), window=frame_scroll, anchor="nw")
+    canvas.configure(yscrollcommand=scroll.set)
+
+    canvas.pack(side="left", fill="both", expand=True)
+    scroll.pack(side="right", fill="y")
+
+    def rolar(evento):
+        canvas.yview_scroll(int(-1 * (evento.delta / 120)), "units")
+    canvas.bind_all("<MouseWheel>", rolar)
+
+    vars_map = {}
+    widgets_map = {}
+
+    projetos_ordenados = sorted(todos.values(), key=lambda x: x["name"].lower())
+
+    for p in projetos_ordenados:
+        pid = p["id"]
+        esta_presente = p["filename"] in arquivos_atuais
+        var = tk.BooleanVar(value=esta_presente)
+        vars_map[pid] = var
+        cb = tk.Checkbutton(frame_scroll, text=p["name"], variable=var, font=("Arial", 9))
+        cb.pack(anchor="w", padx=4, pady=2)
+        widgets_map[pid] = (cb, p["name"].lower())
+
+    def filtrar(evento=None):
+        texto = entrada_filtro.get().strip().lower()
+        for pid, (cb, nome_p) in widgets_map.items():
+            if texto in nome_p:
+                cb.pack(anchor="w", padx=4, pady=2)
+            else:
+                cb.pack_forget()
+
+    entrada_filtro.bind("<KeyRelease>", filtrar)
+
+    frame_rodape = tk.Frame(top, padx=10, pady=10)
+    frame_rodape.pack(fill="x")
+
+    def salvar():
+        os.makedirs(pasta_proj_perfil, exist_ok=True)
+        outside_f = os.path.join(pasta_proj_perfil, "outside-of-project.json")
+        if not os.path.exists(outside_f):
+            with open(outside_f, "w", encoding="utf-8") as fp:
+                json.dump({"id": "outside-of-project", "name": "Outside of Project"}, fp)
+
+        for pid, var in vars_map.items():
+            p_info = todos[pid]
+            destino = os.path.join(pasta_proj_perfil, p_info["filename"])
+            if var.get():
+                if not os.path.exists(destino):
+                    try:
+                        shutil.copy2(p_info["src"], destino)
+                    except:
+                        pass
+            else:
+                if os.path.exists(destino):
+                    try:
+                        os.remove(destino)
+                    except:
+                        pass
+        canvas.unbind_all("<MouseWheel>")
+        top.destroy()
+        carregar_lista_perfis()
+        messagebox.showinfo(t("t_sucesso"), t("sucesso_proj", nome=nome))
+
+    btn_salvar = tk.Button(frame_rodape, text=t("btn_salvar"), command=salvar, width=18, bg="#d9d9d9", height=2)
+    btn_salvar.pack(side="left", padx=5)
+
+    btn_cancelar = tk.Button(frame_rodape, text=t("btn_cancelar"), command=lambda: (canvas.unbind_all("<MouseWheel>"), top.destroy()), width=12, height=2)
+    btn_cancelar.pack(side="right", padx=5)
+
+def abrir_projeto_antigravity():
+    if not PROJETO_SELECIONADO:
+        messagebox.showwarning(t("t_aviso"), t("aviso_selecao_proj"))
+        return
+    perfil = var_perfil_para_abrir.get().strip()
+    executar_antigravity(perfil, PROJETO_SELECIONADO.get("path"))
+
+def abrir_projeto_claude():
+    if not PROJETO_SELECIONADO:
+        messagebox.showwarning(t("t_aviso"), t("aviso_selecao_proj"))
+        return
+    executar_claude(PROJETO_SELECIONADO.get("path"))
+
+def abrir_projeto_chatgpt():
+    if not PROJETO_SELECIONADO:
+        messagebox.showwarning(t("t_aviso"), t("aviso_selecao_proj"))
+        return
+    executar_chatgpt(PROJETO_SELECIONADO.get("path"))
+
+def abrir_projeto_pasta():
+    if not PROJETO_SELECIONADO:
+        messagebox.showwarning(t("t_aviso"), t("aviso_selecao_proj"))
+        return
+    abrir_pasta_explorer(PROJETO_SELECIONADO.get("path"))
+
+def copiar_contexto_clipboard():
+    nome = var_ponte_proj.get().strip()
+    if not nome:
+        messagebox.showwarning(t("t_aviso"), t("aviso_selecao_proj"))
+        return
+    ctx = gerar_contexto_markdown(nome)
+    janela.clipboard_clear()
+    janela.clipboard_append(ctx)
+    messagebox.showinfo(t("t_sucesso"), t("sucesso_copiado"))
+
+def exportar_contexto_arquivo():
+    nome = var_ponte_proj.get().strip()
+    if not nome:
+        messagebox.showwarning(t("t_aviso"), t("aviso_selecao_proj"))
+        return
+    p_info = None
+    for p in PROJETOS_CACHE.values():
+        if p["name"].lower() == nome.lower():
+            p_info = p
+            break
+    if not p_info or not p_info.get("path") or not os.path.exists(p_info["path"]):
+        messagebox.showwarning(t("t_aviso"), t("erro_sem_pasta"))
+        return
+    ctx = gerar_contexto_markdown(nome)
+    alvo = os.path.join(p_info["path"], ".ai-context.md")
+    try:
+        with open(alvo, "w", encoding="utf-8") as f:
+            f.write(ctx)
+        messagebox.showinfo(t("t_sucesso"), t("sucesso_exportado", caminho=alvo))
+    except Exception as e:
+        messagebox.showerror(t("t_erro"), str(e))
+
+btn_add.config(command=criar_perfil)
+btn_abrir_perfil.config(command=abrir_perfil_selecionado)
+btn_proj_perfil.config(command=gerenciar_projetos_perfil)
+btn_atalho_perfil.config(command=criar_atalho)
+btn_del_perfil.config(command=excluir_perfil)
+
+btn_sync_all_hub.config(command=executar_sincronizacao_universal)
+btn_sync_proj_chats.config(command=executar_sincronizacao_projeto_atual)
+btn_sync_all_ponte.config(command=executar_sincronizacao_universal)
+
+btn_abrir_proj_ag.config(command=abrir_projeto_antigravity)
+btn_abrir_proj_claude.config(command=abrir_projeto_claude)
+btn_abrir_proj_chatgpt.config(command=abrir_projeto_chatgpt)
+btn_abrir_proj_pasta.config(command=abrir_projeto_pasta)
+
+btn_refresh_preview.config(command=atualizar_preview_ponte)
+btn_copiar_prompt.config(command=copiar_contexto_clipboard)
+btn_exportar_md.config(command=exportar_contexto_arquivo)
+
+def atualizar_textos_interface():
+    janela.title(t("title"))
+    lbl_idioma.config(text=t("lbl_idioma"))
+
+    notebook.tab(tab_perfis, text=t("tab_perfis"))
+    notebook.tab(tab_projetos, text=t("tab_projetos"))
+    notebook.tab(tab_ponte, text=t("tab_ponte"))
+
+    frame_topo_perfis.config(text=t("frame_create"))
+    lbl_nome.config(text=t("lbl_nome"))
+    btn_add.config(text=t("btn_add"))
+    chk_copiar.config(text=t("chk_copiar"))
+    frame_meio_perfis.config(text=t("frame_perfis"))
+    btn_abrir_perfil.config(text=t("btn_abrir"))
+    btn_proj_perfil.config(text=t("btn_proj"))
+    btn_atalho_perfil.config(text=t("btn_atalho"))
+    btn_del_perfil.config(text=t("btn_del"))
+
+    btn_sync_all_hub.config(text=t("btn_sync_universal"))
+    lbl_filtrar_proj.config(text=t("filtrar"))
+    frame_detalhe_proj.config(text=t("lbl_acoes_ia"))
+    lbl_perfil_escolha.config(text=t("lbl_perfil_alvo"))
+    btn_abrir_proj_ag.config(text=t("btn_abrir_ag"))
+    btn_abrir_proj_claude.config(text=t("btn_abrir_claude"))
+    btn_abrir_proj_chatgpt.config(text=t("btn_abrir_chatgpt"))
+    btn_abrir_proj_pasta.config(text=t("btn_abrir_pasta"))
+    btn_sync_proj_chats.config(text=t("btn_sync_este_proj"))
+
+    lbl_projeto_ponte.config(text=t("lbl_projeto_topo"))
+    btn_refresh_preview.config(text=t("btn_atualizar_ctx"))
+    btn_copiar_prompt.config(text=t("btn_copiar_ctx"))
+    btn_exportar_md.config(text=t("btn_exportar_ctx"))
+
+    carregar_lista_perfis()
+    filtrar_projetos()
+
+def mudar_idioma(escolha):
+    global idioma_atual
+    sigla = IDIOMAS_NOMES.get(escolha, "pt")
+    idioma_atual = sigla
+    salvar_idioma(sigla)
+    atualizar_textos_interface()
+
 opt_idioma = tk.OptionMenu(frame_idioma, var_idioma, *IDIOMAS_NOMES.keys(), command=mudar_idioma)
 opt_idioma.config(font=("Arial", 9), width=12)
 opt_idioma.pack(side="left", padx=5)
 
-frame_topo = tk.LabelFrame(janela, text=t("frame_create"), padx=10, pady=10)
-frame_topo.pack(padx=10, pady=5, fill="x")
-
-lbl_nome = tk.Label(frame_topo, text=t("lbl_nome"))
-lbl_nome.grid(row=0, column=0, sticky="w")
-
-entrada_nome = tk.Entry(frame_topo, width=28)
-entrada_nome.grid(row=0, column=1, padx=5)
-
-btn_add = tk.Button(frame_topo, text=t("btn_add"), command=criar_perfil, width=10)
-btn_add.grid(row=0, column=2, padx=5)
-
-var_copiar_tudo = tk.BooleanVar(value=False)
-chk_copiar = tk.Checkbutton(frame_topo, text=t("chk_copiar"), variable=var_copiar_tudo)
-chk_copiar.grid(row=1, column=0, columnspan=3, sticky="w", pady=(6, 0))
-
-frame_meio = tk.LabelFrame(janela, text=t("frame_perfis"), padx=10, pady=10)
-frame_meio.pack(padx=10, pady=5, fill="both", expand=True)
-
-scrollbar = tk.Scrollbar(frame_meio)
-scrollbar.pack(side="right", fill="y")
-
-lista = tk.Listbox(frame_meio, yscrollcommand=scrollbar.set, font=("Arial", 10), height=7)
-lista.pack(side="left", fill="both", expand=True)
-scrollbar.config(command=lista.yview)
-
-frame_botoes = tk.Frame(janela, padx=10, pady=5)
-frame_botoes.pack(fill="x")
-
-btn_abrir = tk.Button(frame_botoes, text=t("btn_abrir"), command=abrir_perfil, height=2, bg="#d9d9d9")
-btn_abrir.pack(fill="x", pady=2)
-
-btn_proj = tk.Button(frame_botoes, text=t("btn_proj"), command=gerenciar_projetos, height=1)
-btn_proj.pack(fill="x", pady=2)
-
-btn_atalho = tk.Button(frame_botoes, text=t("btn_atalho"), command=criar_atalho)
-btn_atalho.pack(fill="x", pady=2)
-
-btn_del = tk.Button(frame_botoes, text=t("btn_del"), command=excluir_perfil)
-btn_del.pack(fill="x", pady=2)
-
+carregar_lista_perfis()
+carregar_lista_projetos()
 atualizar_textos_interface()
-janela.mainloop()
+
+if __name__ == "__main__":
+    janela.mainloop()
