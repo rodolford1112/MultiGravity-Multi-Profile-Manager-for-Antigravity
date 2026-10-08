@@ -142,6 +142,27 @@ A comprehensive technical and legal compliance framework covering local sandbox 
 
 ---
 
+
+
+---
+
+## Universal Multi-AI Hub & Cross-Platform Bridge
+
+MultiGravity includes a unified multi-AI development hub connecting **Google Antigravity**, **Anthropic Claude Desktop**, and **OpenAI ChatGPT / Codex**:
+
+### Key Bridge Capabilities
+1. **Bidirectional Claude Desktop Synchronization**:
+   - Automatically synchronizes workspace definitions between Antigravity and Claude (`~/.claude.json` and `~/.claude/projects/`).
+   - Translates local path formats and directory structures into Claude-compatible project spaces.
+2. **OpenAI ChatGPT & Codex State Management**:
+   - Integrates with local Codex SQLite configuration (`~/.codex/state_5.sqlite`, `config.toml`, `.codex-global-state.json`).
+   - Registers common project environments so your AI assistants share consistent workspace contexts.
+3. **Universal Memory & Context Generator**:
+   - Aggregates Antigravity conversation summaries (`conversation_summaries.db`) and workspace configurations into structured Markdown context summaries.
+   - One-click clipboard copying or direct file export to bootstrap conversations in any external AI model with full project memory.
+4. **Unified Multi-AI Launcher**:
+   - Direct launch actions for Antigravity profiles, Claude Desktop, and ChatGPT/Codex directly from the Central Projects Hub.
+
 ## Building from Source
 
 To compile the application into a single standalone executable using PyInstaller:
